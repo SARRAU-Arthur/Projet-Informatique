@@ -1,0 +1,19 @@
+grandeur;dimension_SI
+longueur;L
+masse;M
+temps;T
+intensite electrique;I
+temperature;θ
+quantite de matiere;N
+intensite lumineuse;J
+pression;M.L^-1.T^-2
+surface;L^2
+volume;V^3
+force;M.L.T^-2
+acceleration;L.T^-2
+vitesse;L.T^-1
+tension;M.L^2.T^-3.I^-1
+resistance;M.L^2.T^-3.I^-2
+champ electrique;M.L.T^-3.I^-1
+charge;T.I
+champ magnetique;M.T^-2.I^-1

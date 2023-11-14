@@ -1,0 +1,12 @@
+TOKEN: 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
+
+FIX ISSUE FILE CERTIFICATE: git config --global http.sslcainfo "C:\Users\sarra\Downloads\Applications\Git\Git\mingw64\etc\ssl\certs\ca-bundle.crt"
+
+Synchroniser modifications fichiers avec GitHub: 
+	1 - Lancer GitBash
+	2 - Se placer à l'emplacement du repository sur le PC
+	3 - (Visualiser les fichiers modifiés) git status
+	4 - (Ajouter ces fichiers modifiés, uniquement le code, pas les exécutables) git add "<nom 	fichiers.format>"
+	5 - (Vérifier que les fichiers ont été ajoutés) git status
+	6 - (Envoyer vers GitHub) git push origin main
+
