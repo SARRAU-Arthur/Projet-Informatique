@@ -26,16 +26,16 @@ Type fichiers = Record
 	cv: conversions;
 	ct: constantes;
 	dm: dimensions;
-	og: ordres_grandeurs
+	og: ordres_grandeurs;
 	end;
 
-procedure fonctionnalite(var f: fichiers);
+procedure fonctionnalite(var f: fichiers; var t: tableau);
 function parcoursfichier(var currentfile: TextFile): Integer;
-procedure chargementdonnes(var t:tableau);
-//function conversion (cv: conversions): string;
-function constante (ct: constantes): string;
-function dimension (dm: dimensions): string;
-function ordre_grandeur (og: ordres_grandeurs): string;
+procedure chargementdonnees(var t:tableau);
+function conversion (var t: tableau): string;
+function constante (var t: tableau): string;
+function dimension (var t: tableau): string;
+function ordre_grandeur (var t: tableau): string;
 procedure ajout(var fichierajout: TextFile; var f: fichiers);
 
 Implementation
@@ -44,7 +44,7 @@ uses Sysutils;
 
 Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet Informatique\';
 
-procedure fonctionnalite(var f: fichiers);
+procedure fonctionnalite(var f: fichiers; var t: tableau);
 var valide: Boolean; 
 	choix: string; 
 	currentfile: TextFile;
@@ -65,29 +65,29 @@ while not(valide) do
 		'cv': 
 		begin;
 		assign(currentfile,cheminacces+'conversions.csv');
-		chargementdonnees;
-		conversion(f.cv,currentarray);
+		chargementdonnees(t);
+		conversion(t);
 		valide:=False;
 		end;
 		'ct': 
 		begin;
 		assign(currentfile,cheminacces+'constantes.csv');
-		chargementdonnees;
-		constante(ct);
+		chargementdonnees(t);
+		constante(t);
 		valide:=False;
 		end;
 		'dm': 
 		begin;
 		assign(currentfile,cheminacces+'dimensions.csv');
-		chargementdonnees;
-		dimension(dm);
+		chargementdonnees(t);
+		dimension(t);
 		valide:=False;
 		end;
 		'og': 
 		begin;
 		assign(currentfile,cheminacces+'ordres_grandeurs.csv');
-		chargementdonnees;
-		ordre_grandeur(og);
+		chargementdonnees(t);
+		ordre_grandeur(t);
 		valide:=False;
 		end;
 		'aj': 
@@ -98,6 +98,7 @@ while not(valide) do
 	else
 		writeln('Saisie incorrecte, veuillez recommencer');
 	end;
+end;
 end;
 
 function parcoursfichier(var currentfile: TextFile): Integer;
@@ -122,7 +123,7 @@ parcoursfichier:=10*n+m;
 close(currentfile);
 end;
 
-procedure chargementdonnes(var t: tableau);
+procedure chargementdonnees(var t: tableau);
 var i, j, k, n, m: Integer;
 	lines, currentsquare, affichage: String;
 	currentfile: TextFile;
@@ -158,9 +159,10 @@ while not(eof(currentfile)) do
 close(currentfile);
 end;
 
-{function conversion(cv: conversions; var currentarray): String;
+function conversion(var t: tableau): String;
 var trouve: Boolean;
 	i: Integer;
+	cv: conversions;
 begin
 writeln('Valeur a convertir: ');
 readln(cv.valeur_i);
@@ -171,7 +173,7 @@ readln(cv.unite_f);
 trouve:=False;
 repeat 
 	begin
-	for i=1 to l
+	for i:=1 to l
 	if (cv.unite_i in currentarray[i][2]) and (cv.unite_f in currentarray[i][4]) then
 	
 	else
@@ -179,7 +181,7 @@ repeat
 			
 	end;
 	until i=length(currentarray) or trouve
-end;}
+end;
 
 procedure ajout(var fichierajout: TextFile; var f: fichiers);
 var nom_fichier_ajout: String;
