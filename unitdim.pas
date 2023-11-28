@@ -31,6 +31,15 @@ Type fichiers = Record
 	og: ordres_grandeurs;
 	end;
 
+procedure fonctionnalite(var f: fichiers; var t: tableau);
+function parcoursfichier(var currentfile: TextFile; nom: String): String;
+procedure chargementdonnees(var t:tableau; nom: string);
+function conversion(var currentfile: TextFile): Extended;
+function constante(var t: tableau): string;
+function dimension (var t: tableau): string;
+function ordre_grandeur (var t: tableau): string;
+procedure ajout(var f: fichiers; var t: tableau);
+
 Implementation
 
 uses Sysutils;
@@ -38,19 +47,10 @@ uses Sysutils;
 Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet Informatique\';
 
 procedure fonctionnalite(var f: fichiers; var t: tableau);
-function parcoursfichier(var currentfile: TextFile; nom: String): String;
-procedure chargementdonnees(var t:tableau; nom: string);
-function conversion (var t: tableau): string;
-function constante(var t: tableau): string;
-function dimension (var t: tableau): string;
-function ordre_grandeur (var t: tableau): string;
-procedure ajout(var fichierajout: TextFile; var f: fichiers; var t: tableau);
-
-procedure fonctionnalite(var f: fichiers; var t: tableau);
 var valide: Boolean; 
 	choix: string; 
 	currentfile: TextFile;
-	fichierajout: Textfile;
+	//fichierajout: Textfile;
 begin
 valide:=True;
 choix:='';
@@ -67,7 +67,7 @@ while not(valide) do
 		'cv': 
 		begin;
 		assign(currentfile,cheminacces+'conversions.csv');
-		conversion(t);
+		conversion(currentfile);
 		valide:=False;
 		end;
 		'ct': 
@@ -90,7 +90,7 @@ while not(valide) do
 		end;
 		'aj': 
 		begin;
-		ajout(fichierajout,f,t);
+		ajout(f,t);
 		valide:=False
 		end;
 	else
@@ -271,6 +271,27 @@ else
 writeln(cv.valeur_i,' ',unite_i,' ','=',' ',conversion,' ',unite_f);
 end;
 
+function constante(var t: tableau): string;
+var constant, nm: string;
+	currentfile: TextFile;
+begin
+nm:=parcoursfichier(currentfile,'conversions');
+chargementdonnees(t,'conversions');
+writeln('De quelle constante souhaitez-vous consulter la valeur');
+readln(constant);
+constante:=constant+nm;
+end;
+
+function dimension (var t: tableau): string;
+begin
+dimension:='32';
+end;
+
+function ordre_grandeur (var t: tableau): string;
+begin
+ordre_grandeur:='pppp';
+end;
+
 procedure ajout(var f: fichiers; var t: tableau);
 var nom_fichier_ajout, nm, saisie: String;
 	k: Integer;
@@ -293,15 +314,4 @@ for k:=1 to StrToInt(nm[2]) do
 close(fichierajout);
 end;
 
-function constante(var t: tableau): string;
-var constant, nm: string;
-	currentfile: TextFile;
-begin
-nm:=parcoursfichier(currentfile,'conversions');
-chargementdonnees(t,'conversions');
-writeln('De quelle constante souhaitez-vous consulter la valeur');
-readln(constant);
-constante:=constant+nm;
-end;
-
-end.
+END.
