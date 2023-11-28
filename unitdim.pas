@@ -31,20 +31,20 @@ Type fichiers = Record
 	og: ordres_grandeurs;
 	end;
 
-procedure fonctionnalite(var f: fichiers; var t: tableau);
-function parcoursfichier(var currentfile: TextFile): Integer;
-procedure chargementdonnees(var t:tableau; nom: string);
-function conversion (var t: tableau): string;
-function constante (var t: tableau): string;
-function dimension (var t: tableau): string;
-function ordre_grandeur (var t: tableau): string;
-procedure ajout(var fichierajout: TextFile; var f: fichiers; var t: tableau);
-
 Implementation
 
 uses Sysutils;
 
-Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet-Informatique\';
+Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet Informatique\';
+
+procedure fonctionnalite(var f: fichiers; var t: tableau);
+function parcoursfichier(var currentfile: TextFile; nom: String): String;
+procedure chargementdonnees(var t:tableau; nom: string);
+function conversion (var t: tableau): string;
+function constante(var t: tableau): string;
+function dimension (var t: tableau): string;
+function ordre_grandeur (var t: tableau): string;
+procedure ajout(var fichierajout: TextFile; var f: fichiers; var t: tableau);
 
 procedure fonctionnalite(var f: fichiers; var t: tableau);
 var valide: Boolean; 
@@ -99,11 +99,11 @@ while not(valide) do
 end;
 end;
 
-function parcoursfichier(var currentfile: TextFile): String;
+function parcoursfichier(var currentfile: TextFile; nom: String): String;
 var k, n, m: Integer;
 	lines: String;
 begin
-assign(currentfile,cheminacces);
+assign(currentfile,cheminacces + nom + '.csv');
 reset(currentfile);
 n:=0;
 m:=0;
@@ -118,7 +118,6 @@ for k:=1 to length(lines) do
 		m+=1;
 	end;	
 parcoursfichier:=IntToStr(n)+IntToStr(m);
-close(currentfile);
 end;
 
 procedure chargementdonnees(var t: tableau; nom: string);
@@ -128,15 +127,15 @@ var i, j, k: Integer;
 begin
 lines:='';
 i:=-1;
-nm:=IntToStr(parcoursfichier(currentfile));
-setlength(t.currentarray,StrToInt(nm[1]),StrToInt(nm[2]));
-assign(currentfile,cheminacces);
+j:=0;
+nm:=parcoursfichier(currentfile,nom);
+assign(currentfile,cheminacces + nom + '.csv');
 reset(currentfile);
+setlength(t.currentarray,StrToInt(nm[1]),StrToInt(nm[2]));
 currentsquare:='';
 while not(eof(currentfile)) do
 	begin
 	i+=1;
-	j:=1;
 	affichage:='';
 	readln(currentfile,lines);
 	for k:=1 to length(lines) do
@@ -145,47 +144,131 @@ while not(eof(currentfile)) do
 			currentsquare:=currentsquare+lines[k]
 		else
 			begin
+			//writeln('OK');
 			t.currentarray[i][j]:=currentsquare;
 			affichage:=affichage + ' ' + t.currentarray[i][j];
 			j+=1;
 			currentsquare:='';
 			end;
 		end;
-	//writeln(affichage);
+	writeln(affichage);
 	end;
 close(currentfile);
 end;
 
-function calc_conv (calcul_1, calcul_2, valeur_i: string): EStab;
-var i, j, k: Integer;
-	decim, puissance: String;
-	atteint: Boolean;
-	nombre: array [1..3,1..2] of String;
+function conversion(var currentfile: TextFile): Extended;
+var i, j, k, i_c, i_l, f_c, f_l, delta: Integer;
+	cv: conversions;
+	trouve_i, trouve_f: Boolean;
+	nm, og_nm, unite_i, unite_f: String;
+	t, og: tableau;
+	result, result_int, power_adjust: Extended;
 begin
-nombre[1][1]:=calcul_1;
-nombre[2][1]:=calcul_2;
-nombre[3][1]:=valeur_i;
-for j:=1 to 3 do
+chargementdonnees(t,'conversions');
+assign(currentfile,'conversions');
+nm:=parcoursfichier(currentfile,'conversions');
+setlength(t.currentarray,(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10,StrToInt(nm) mod 10);
+{write('Valeur intiale: ');
+readln(cv.valeur_i);
+write('Unite initiale: ');
+readln(unite_i);
+write('Unite finale: ');
+readln(unite_f);}
+cv.valeur_i:='1987778,7665';
+unite_i:='m';
+unite_f:='k m';
+trouve_i:=False;
+trouve_f:=False;
+if unite_i[2]=' ' then
 	begin
-	decim:=' ';
-	puissance:=' ';
-	atteint:=False;
-	for i:=1 to length(nombre[j][1]) do
+	for k:=3 to length(unite_i) do
+		cv.unite_i:=cv.unite_i+unite_i[k];
+	end	
+else 
+	cv.unite_i:=unite_i;
+if unite_f[2]=' ' then
+	begin
+	for k:=3 to length(unite_f) do
+		cv.unite_f:=cv.unite_f+unite_f[k];
+	end
+else
+	cv.unite_f:=unite_f;
+i:=0;
+while not(trouve_i) or not(trouve_f) do
+	begin
+	j:=0;
+	while j<((StrToInt(nm) mod 10) div 2) do
 		begin
-		if ((nombre[j][1])[i]<>'E') and not(atteint) then
-			decim+=(nombre[j][1])[i];
-		if ((nombre[j][1])[i]='E') then
-			atteint:=True;
-		if ((nombre[j][1])[i]<>'E') and atteint then
-			puissance+=(nombre[j][1])[i];
+		if t.currentarray[i][2*j+1]=cv.unite_i then
+			begin
+			i_l:=i;
+			i_c:=2*j+1;
+			trouve_i:=True;
+			end;
+		if t.currentarray[i][2*j+1]=cv.unite_f then
+			begin
+			f_l:=i;
+			f_c:=2*j+1;
+			trouve_f:=True;
+			end;
+		j+=1;
 		end;
-	calc_conv[j][1]:='';
-	for k:=2 to length(decim) do
-		calc_conv[j][1]:=calc_conv[j][1]+decim[k];
-	for k:=2 to length(puissance) do
-		calc_conv[j][2]:=calc_conv[j][2]+puissance[k];
-	writeln(calc_conv[j][1],calc_conv[j][2]);
+	i+=1;
 	end;
+//writeln(i_l,' ',i_c,' ',f_l,' ',f_c);
+if not(trouve_i) and not(trouve_f) then
+	writeln('Impossible de realiser votre conversion, verifiez les unites et formats de votre saisie')
+else
+	begin
+	if (i_l<>f_l) and (cv.unite_i<>cv.unite_f) then
+		begin
+		result_int:=StrToFloat(t.currentarray[i_l][i_c+1])*StrToFloat(cv.valeur_i)/StrToFloat(t.currentarray[i_l][i_c-1]);
+		result:= result_int*StrToFloat(t.currentarray[f_l][f_c-1])/StrToFloat(t.currentarray[f_l][f_c+1]);
+		end
+	else if (i_l=f_l) and (cv.unite_i<>cv.unite_f) then 
+		begin
+		if i_c<f_c then
+			delta:=-1
+		else
+			delta:=+1;
+		result:=StrToFloat(cv.valeur_i)*StrToFloat(t.currentarray[f_l][f_c+delta])/StrToFloat(t.currentarray[f_l][i_c+delta])
+		end;
+	chargementdonnees(og,'ordres_grandeurs');
+	og_nm:=parcoursfichier(currentfile,'ordres_grandeurs');
+	if (cv.unite_i<>unite_i) or (cv.unite_f<>unite_f) or (cv.unite_i=cv.unite_f) then
+		begin
+		for k:=1 to (StrToInt(og_nm)-(StrToInt(og_nm) mod 10)) div 10 -1 do
+			begin
+			power_adjust:=1E0;
+			if (unite_i[1]=og.currentarray[k][0]) and (cv.unite_i<>unite_i) and (cv.unite_i<>cv.unite_f) then
+				power_adjust:=power_adjust*StrToFloat(og.currentarray[k][1]);
+			if  (unite_f[1]=og.currentarray[k][0]) and (cv.unite_f<>unite_f) and (cv.unite_i<>cv.unite_f) then
+				power_adjust:=power_adjust/StrToFloat(og.currentarray[k][1]);
+			if (cv.unite_i=cv.unite_f) then
+				begin
+				if (i_c<f_c) then
+					begin
+					if unite_i[1]=og.currentarray[k][0] then
+						result:=StrToFloat(cv.valeur_i)*StrToFloat(og.currentarray[k][1])
+					else if unite_f[1]=og.currentarray[k][0] then
+						result:=StrToFloat(cv.valeur_i)/StrToFloat(og.currentarray[k][1]);
+					end
+				else
+					begin
+					if unite_i[1]=og.currentarray[k][0] then
+						result:=StrToFloat(cv.valeur_i)*StrToFloat(og.currentarray[k][1])
+					else if unite_f[1]=og.currentarray[k][0] then
+						result:=StrToFloat(cv.valeur_i)/StrToFloat(og.currentarray[k][1]);
+					end;
+				end;
+			result*=power_adjust;
+			end;
+		end;
+	{if abs(result-Round(result)<0.001 then
+		result:=Round(result);}
+	conversion:=result;	
+	end;
+writeln(cv.valeur_i,' ',unite_i,' ','=',' ',conversion,' ',unite_f);
 end;
 
 procedure ajout(var f: fichiers; var t: tableau);
@@ -196,9 +279,9 @@ begin
 writeln('Quel fichier souhaitez-vous editer ?');
 writeln('Saisissez au choix: "conversions" / "constantes" / "dimensions" / "odres_grandeur"');
 readln(nom_fichier_ajout);
-assign(fichierajout,cheminacces+nom_fichier_ajout+'.csv');
+assign(fichierajout,cheminacces + nom_fichier_ajout + '.csv');
 chargementdonnees(t,nom_fichier_ajout);
-nm:=IntToStr(parcoursfichier(currentfile));
+nm:=parcoursfichier(currentfile,nom_fichier_ajout);
 setlength(t.currentarray,StrToInt(nm[1])+1,StrToInt(nm[2]));
 //t.currentarray[StrToInt(nm[1])+1][StrToInt(nm[2])];
 for k:=1 to StrToInt(nm[2]) do
@@ -208,6 +291,17 @@ for k:=1 to StrToInt(nm[2]) do
 	t.currentarray[StrToInt(nm[1])+1][k]:=saisie+';'
 	end;
 close(fichierajout);
+end;
+
+function constante(var t: tableau): string;
+var constant, nm: string;
+	currentfile: TextFile;
+begin
+nm:=parcoursfichier(currentfile,'conversions');
+chargementdonnees(t,'conversions');
+writeln('De quelle constante souhaitez-vous consulter la valeur');
+readln(constant);
+constante:=constant+nm;
 end;
 
 end.
