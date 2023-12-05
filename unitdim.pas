@@ -29,14 +29,13 @@ Type fichiers = Record
 	og: ordres_grandeurs;
 	end;
 
-procedure fonctionnalite(var f: fichiers; var t: tableau);
+procedure fonctionnalites(var f: fichiers);
 function parcoursfichier(var currentfile: TextFile; nom: String): String;
 procedure chargementdonnees(var t:tableau; var nm: string; nom: string);
 function conversion(var currentfile: TextFile): Extended;
-function constante(var t: tableau): string;
-function dimension (var t: tableau): string;
+function constante(var currentfile: TextFile): string;
+function dimension (var currentfile: TextFile): string;
 procedure ajout(var f: fichiers; var t: tableau);
-//procedure consult;
 
 Implementation
 
@@ -44,10 +43,11 @@ uses Sysutils, Math;
 
 Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet Informatique\';
 
-procedure fonctionnalite(var f: fichiers; var t: tableau);
+procedure fonctionnalites(var f: fichiers);
 var valide: Boolean; 
 	choix: string; 
 	currentfile: TextFile;
+	t: tableau;
 begin
 valide:=True;
 choix:='';
@@ -62,10 +62,9 @@ repeat
 	readln(choix);
 	case choix of
 		'cv': conversion(currentfile);
-		'ct': constante(t);
-		'dm': dimension(t);
+		'ct': constante(currentfile);
+		'dm': dimension(currentfile);
 		'aj': ajout(f,t);
-		//'cs': consult
 	else
 		begin
 		writeln('Saisie incorrecte, veuillez recommencer');
@@ -103,29 +102,29 @@ var i, j, k: Integer;
 	currentfile: TextFile;
 begin
 lines:='';
-i:=0;
-j:=0;
+i:=-1;
+j:=-1;
 nm:=parcoursfichier(currentfile,nom);
 reset(currentfile);
 setlength(t,StrToInt(nm)-(StrToInt(nm) mod 10),StrToInt(nm) mod 10);
 currentsquare:='';
 while not(eof(currentfile)) do
 	begin
+	i+=1;
 	affichage:='';
 	readln(currentfile,lines);
 	for k:=1 to length(lines) do
 		begin
+		j+=1;
 		if lines[k]<>';' then
 			currentsquare:=currentsquare+lines[k]
 		else
 			begin
 			t[i][j]:=currentsquare;
 			affichage:=affichage + ' ' + t[i][j];
-			j+=1;
 			currentsquare:='';
 			end;
 		end;
-	i+=1;
 	//writeln(affichage);
 	end;
 close(currentfile);
@@ -165,7 +164,7 @@ if unite_f[2]=' ' then
 	end
 else
 	cv.unite_f:=unite_f;
-i:=1;
+i:=0;
 while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and (not(trouve_i) or not(trouve_f)) do
 	begin
 	j:=0;
@@ -185,7 +184,7 @@ while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and (not(trouve_i) or not
 			end;
 		j+=1;
 		end;
-		writeln(t[i][2*j+1]);
+	writeln(t[i][2*j+1]);
 	i+=1;
 	end;
 writeln(i_l,' ',i_c,' ',f_l,' ',f_c);
@@ -243,19 +242,39 @@ else
 	end;
 end;
 
-function constante(var t: tableau): string;
-var constant, nm: string;
-	currentfile: TextFile;
+function constante(var currentfile: TextFile): string;
+var constant, nm, valeur, unite: string;
+	i: integer;
+	t: tableau;
+	trouve: Boolean;
 begin
-nm:=parcoursfichier(currentfile,'constantes');
 chargementdonnees(t,nm,'constantes');
 writeln('De quelle constante souhaitez-vous consulter la valeur');
 readln(constant);
-constante:=constant+nm;
+trouve:=False;
+i:=-1;
+while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
+	begin
+	if (t[i][0]=constant) or (t[i][1]=constant) then
+		begin
+		valeur:=t[i][2];
+		unite:=t[i][3];
+		constant:=t[i][0];
+		trouve:=True;
+		end;
+	end;
+if trouve=False then
+	writeln('Saisie incorrecte, veuillez recommencer');
+constante:=constant + ' = ' + valeur + ' ' + unite;
+writeln(constante);
 end;
 
-function dimension (var t: tableau): string;
+function dimension (var currentfile: TextFile): string;
+var nm: string;
+	t: tableau;
 begin
+chargementdonnees(t,nm,'dimensions');
+
 dimension:='à coder grâce aux CODES ASCII';
 end;
 
