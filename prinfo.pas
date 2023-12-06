@@ -1,12 +1,21 @@
-program CalculatriceStatistique;
+unit unitstats;
 
-uses SysUtils, Math;
+Interface 
 
-const MAX=20;
+const MAX=20; 
 
 type t = Array [0..MAX] of Real ;
 type tableau1D=Array of Real;
 type subtab=array of Array of real;
+
+procedure SaisirTableau(var TabI:subtab ; var n:integer);
+procedure creationtableau(var tab_med: tableau1D) ;
+//procedure creationtableau(var tab_med: tableau1D) ;
+function CalculerMoyenne(tab_med:Tableau1D):real;
+
+Implementation
+
+uses SysUtils, Math;
 
 procedure SaisirTableau(var TabI:subtab ; var n:integer);
 var i, effectif:integer;
@@ -27,7 +36,7 @@ for i:=0 to n-1 do
 end; 
   
 procedure creationtableau(var tab_med: tableau1D) ;
-var n, eff_tot, i, k, j, pos_max, m:Integer;
+var n, eff_tot, i, k, j, pos_max, m, eff_tot_int:Integer;
 	TabI: subtab;
 	trouve_max: Boolean;
 	tab_val: tableau1D;
@@ -43,6 +52,7 @@ TabI[1][1]:=7;
 TabI[2][0]:=-9.6;
 TabI[2][1]:=1;
 eff_tot:=0;
+eff_tot_int:=0;
 trouve_max:=False;
 setlength(tab_val,n);
 for i:=0 to n-1 do
@@ -65,85 +75,41 @@ for k:=0 to n do
 		j+=1;
 		end;
 	TabI[pos_max][0]:=MinValue(tab_val)-1;
-	{l:=0;
-	while not(trouve_min) do
-		begin
-		if tab_val[l]=MinValue(tab_val) then
-			begin
-			pos_min:=l;
-			trouve_min:=True;
-			end;
-		l+=1;
-		end;}
-	TabI[pos_max][1]:=0;
 	for m:=1 to Round(TabI[pos_max][1]) do
-		tab_med[m]:=max;
-	setlength(tab_med,eff_tot-k-1);
+		tab_med[eff_tot_int+m]:=max;
+	eff_tot_int+=Round(TabI[j][1]);
 	end;
 end;
-
-{procedure CalculerMediane( var t2: t) ;
-var  control,i:Integer;
-	 mediane:Real;
-	 t3:tab_med;
-begin
-control:=0;
-  for i := 0 to MAX do
-	begin
-	if 	(t2[i]<>0)then
-		begin
-		t3:=creationtableau(control,i,t2[i]);	
-		control:=control+i;
-		end;
-	end;
-end;
-  
-function CalculerMoyenne(donnees:array of real):Real;
-var total:Real;
+function CalculerMoyenne(tab_med: Tableau1D): Real;
+var
+  i: Integer;
+  total: Real;
 begin
   total := 0;
-  for i := 0 to n - 1 do
-    total := total + donnees[i];
-  CalculerMoyenne := total / n;
+  for i := 0 to High(tab_med) do
+    total := total + tab_med[i];
+  Result := total / (High(tab_med) + 1);
 end;
 
-procedure CalculerMediane;
-begin
- 
-  if n mod 2 = 0 then
-  begin
-    // Si le nombre de donnÃ©es est pair, la mÃ©diane est la moyenne des deux valeurs du milieu
-    mediane := (donnees[n div 2 - 1] + donnees[n div 2]) / 2;
-  end
-  else
-  begin
-    // Si le nombre de donnÃ©es est impair, la mÃ©diane est simplement la valeur du milieu
-    mediane := donnees[n div 2];
-  end;
-end;
-
-procedure CalculerEcartType;
+function CalculerMediane(tab_med: Tableau1D): Real;
 var
-  sommeCarres, ecartMoyen: real;
+  n: Integer;
+begin
+  n := High(tab_med) + 1;
+  if n mod 2 = 0 then
+    Result := (tab_med[n div 2 - 1] + tab_med[n div 2]) / 2
+  else
+    Result := tab_med[n div 2];
+end;
+
+function CalculerEcartType(tab_med: Tableau1D; moyenne: Real): Real;
+var
+  i: Integer;
+  sommeCarres, ecartMoyen: Real;
 begin
   sommeCarres := 0;
-  for i := 0 to n - 1 do
-    sommeCarres := sommeCarres + Power(donnees[i] - moyenne, 2);
-  ecartMoyen := sommeCarres / n;
-  ecartType := Sqrt(ecartMoyen);
-end;}
-
-{var
-  donnees: array of real;
-  total, moyenne, mediane, ecartType: real;
-  i, n: integer;
-  t1:t;
-  ti:subtab;}
-var tab_med: tableau1D;
-	i: integer;
-begin
-//SaisirTableau(ti,n);
-creationtableau(tab_med);
-for i:=1 to Length(tab_med) do
-	writeln(tab_med[i]);
-end.
+  for i := 0 to High(tab_med) do
+    sommeCarres := sommeCarres + Power(tab_med[i] - moyenne, 2);
+  ecartMoyen := sommeCarres / (High(tab_med) + 1);
+  Result := Sqrt(ecartMoyen);
+end;
