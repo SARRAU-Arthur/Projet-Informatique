@@ -224,6 +224,7 @@ else
 					power_adjust/=StrToFloat(og[k][1]);	
 				end;
 			end;
+		//writeln(power_adjust);
 		result*=power_adjust;
 		end;
 	end;
