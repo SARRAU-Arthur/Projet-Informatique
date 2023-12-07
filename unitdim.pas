@@ -2,6 +2,8 @@ Unit unitdim;
 
 Interface
 
+Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet Informatique\';
+
 Type tableau = Array of Array of String;
 	
 Type EStab = Array [1..3,1..2] of String;
@@ -34,14 +36,12 @@ function parcoursfichier(var currentfile: TextFile; nom: String): String;
 procedure chargementdonnees(var t:tableau; var nm: string; nom: string);
 function conversion(var currentfile: TextFile): Extended;
 function constante(var currentfile: TextFile): string;
-function dimension (var currentfile: TextFile): string;
+//function dimension (var currentfile: TextFile): string;
 procedure ajout(var f: fichiers; var t: tableau);
 
 Implementation
 
 uses Sysutils, Math;
-
-Const cheminacces='C:\Users\sarra\OneDrive\Documents\INSA\Projet Informatique\';
 
 procedure fonctionnalites(var f: fichiers);
 var valide: Boolean; 
@@ -63,7 +63,7 @@ repeat
 	case choix of
 		'cv': conversion(currentfile);
 		'ct': constante(currentfile);
-		'dm': dimension(currentfile);
+		//'dm': dimension(currentfile);
 		'aj': ajout(f,t);
 	else
 		begin
@@ -102,36 +102,36 @@ var i, j, k: Integer;
 	currentfile: TextFile;
 begin
 lines:='';
-i:=-1;
-j:=-1;
+i:=0;
 nm:=parcoursfichier(currentfile,nom);
 reset(currentfile);
-setlength(t,StrToInt(nm)-(StrToInt(nm) mod 10),StrToInt(nm) mod 10);
+setlength(t,(StrToInt(nm)-StrToInt(nm) mod 10) div 10,StrToInt(nm) mod 10);
 currentsquare:='';
 while not(eof(currentfile)) do
 	begin
-	i+=1;
 	affichage:='';
 	readln(currentfile,lines);
+	j:=0;
 	for k:=1 to length(lines) do
 		begin
-		j+=1;
-		if lines[k]<>';' then
-			currentsquare:=currentsquare+lines[k]
+		if lines[k]<>';' then 
+			currentsquare:=currentsquare + lines[k]
 		else
 			begin
 			t[i][j]:=currentsquare;
 			affichage:=affichage + ' ' + t[i][j];
 			currentsquare:='';
+			j+=1;
 			end;
 		end;
 	//writeln(affichage);
+	i+=1;
 	end;
 close(currentfile);
 end;
 
 function conversion(var currentfile: TextFile): Extended;
-var i, j, k, i_c, i_l, f_c, f_l, delta: Integer;
+var i, j, k, i_c, i_l, f_c, f_l: Integer;
 	cv: conversions;
 	trouve_i, trouve_f: Boolean;
 	nm, og_nm, unite_i, unite_f: String;
@@ -139,17 +139,18 @@ var i, j, k, i_c, i_l, f_c, f_l, delta: Integer;
 	result, result_int, power_adjust: Extended;
 begin
 chargementdonnees(t,nm,'conversions');
-{write('Valeur intiale: ');
+chargementdonnees(og,og_nm,'ordres_grandeurs');
+trouve_i:=False;
+trouve_f:=False;
+power_adjust:=1E0;
+// Saisie de valeur initiale et unites en jeu dans la conversion
+write('Valeur intiale: ');
 readln(cv.valeur_i);
 write('Unite initiale: ');
 readln(unite_i);
 write('Unite finale: ');
-readln(unite_f);}
-cv.valeur_i:='6,78';
-unite_i:='bar';
-unite_f:='Pa';
-trouve_i:=False;
-trouve_f:=False;
+readln(unite_f);
+// Test de presence d'ordre de grandeur devant les unites saisies
 if unite_i[2]=' ' then
 	begin
 	for k:=3 to length(unite_i) do
@@ -165,7 +166,8 @@ if unite_f[2]=' ' then
 else
 	cv.unite_f:=unite_f;
 i:=0;
-while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and (not(trouve_i) or not(trouve_f)) do
+// Determination de la position des unites dans le tableau
+while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10-1) and (not(trouve_i) or not(trouve_f)) do
 	begin
 	j:=0;
 	while j<((StrToInt(nm) mod 10) div 2) do
@@ -184,62 +186,50 @@ while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and (not(trouve_i) or not
 			end;
 		j+=1;
 		end;
-	writeln(t[i][2*j+1]);
 	i+=1;
 	end;
-writeln(i_l,' ',i_c,' ',f_l,' ',f_c);
+// Calcul du resultat de conversion sans prise en compte des ordres de grandeurs eventuels
 if not(trouve_i) and not(trouve_f) then
 	writeln('Impossible de realiser votre conversion, verifiez les unites et formats de votre saisie')
 else
 	begin
-	if (i_l<>f_l) and (cv.unite_i<>cv.unite_f) then
+	if cv.unite_i<>cv.unite_f then 
 		begin
-		result_int:=StrToFloat(t[i_l][i_c+1])*StrToFloat(cv.valeur_i)/StrToFloat(t[i_l][i_c-1]);
-		result:= result_int*StrToFloat(t[f_l][f_c-1])/StrToFloat(t[f_l][f_c+1]);
-		end
-	else if (i_l=f_l) and (cv.unite_i<>cv.unite_f) then 
-		begin
-		if i_c<f_c then
-			delta:=-1
-		else
-			delta:=+1;
-		result:=StrToFloat(cv.valeur_i)*StrToFloat(t[f_l][f_c+delta])/StrToFloat(t[f_l][i_c+delta])
-		end;
-	chargementdonnees(og,og_nm,'ordres_grandeurs');
-	if (cv.unite_i<>unite_i) or (cv.unite_f<>unite_f) or (cv.unite_i=cv.unite_f) then
-		begin
-		for k:=1 to (StrToInt(og_nm)-(StrToInt(og_nm) mod 10)) div 10 -1 do
+		if (i_l<>f_l) then
 			begin
-			power_adjust:=1E0;
-			if (unite_i[1]=og[k][0]) and (cv.unite_i<>unite_i) and (cv.unite_i<>cv.unite_f) then
-				power_adjust:=power_adjust*StrToFloat(og[k][1]);
-			if  (unite_f[1]=og[k][0]) and (cv.unite_f<>unite_f) and (cv.unite_i<>cv.unite_f) then
-				power_adjust:=power_adjust/StrToFloat(og[k][1]);
-			if (cv.unite_i=cv.unite_f) then
-				begin
-				if (i_c<f_c) then
-					begin
-					if unite_i[1]=og[k][0] then
-						result:=StrToFloat(cv.valeur_i)*StrToFloat(og[k][1])
-					else if unite_f[1]=og[k][0] then
-						result:=StrToFloat(cv.valeur_i)/StrToFloat(og[k][1]);
-					end
-				else
-					begin
-					if unite_i[1]=og[k][0] then
-						result:=StrToFloat(cv.valeur_i)*StrToFloat(og[k][1])
-					else if unite_f[1]=og[k][0] then
-						result:=StrToFloat(cv.valeur_i)/StrToFloat(og[k][1]);
-					end;
-				end;
-			result*=power_adjust;
-			end;
+			result_int:=StrToFloat(t[i_l][i_c+1])*StrToFloat(cv.valeur_i)/StrToFloat(t[i_l][i_c-1]);
+			result:= result_int*StrToFloat(t[f_l][f_c-1])/StrToFloat(t[f_l][f_c+1]);
+			end
+		else
+			result:=StrToFloat(cv.valeur_i)*StrToFloat(t[f_l][f_c-1])/StrToFloat(t[f_l][i_c-1]);
 		end;
-	if ABS(result-Round(result))<0.001 then
-		result:=Round(result);
-	conversion:=result;	
-	writeln(cv.valeur_i,' ',unite_i,' ','=',' ',conversion,' ',unite_f);
+	// Integration au resultat des eventuels ordres de grandeurs
+	if (cv.unite_i<>unite_i) or (cv.unite_f<>unite_f) then
+		begin
+		for k:=1 to (StrToInt(og_nm)-(StrToInt(og_nm) mod 10)) div 10 - 1 do
+			begin
+			if (cv.unite_i<>cv.unite_f) then
+				begin
+				if (unite_i[1]=og[k][0]) then
+					power_adjust*=StrToFloat(og[k][1]);
+				if (unite_f[1]=og[k][0]) then
+					power_adjust/=StrToFloat(og[k][1]);
+				end
+			else
+				begin
+				result:=StrToFloat(cv.valeur_i);
+				if unite_i[1]=og[k][0] then
+					power_adjust*=StrToFloat(og[k][1]);
+				if unite_f[1]=og[k][0] then
+					power_adjust/=StrToFloat(og[k][1]);	
+				end;
+			end;
+		result*=power_adjust;
+		end;
 	end;
+	conversion:=result;
+	// Affichage a l'ecran
+	writeln(cv.valeur_i,' ',unite_i,' ','=',' ',conversion,' ',unite_f);
 end;
 
 function constante(var currentfile: TextFile): string;
@@ -269,14 +259,25 @@ constante:=constant + ' = ' + valeur + ' ' + unite;
 writeln(constante);
 end;
 
-function dimension (var currentfile: TextFile): string;
+{function dimension (var currentfile: TextFile): string;
 var nm: string;
 	t: tableau;
+	decoupage: Array of 
+	grandeurs: string;
 begin
+writeln('Saisissez les grandeurs de votre problème');
+readln(grandeurs)
 chargementdonnees(t,nm,'dimensions');
-
+for i=1 to length(grandeurs) do
+	begin
+	if (grandeurs[i]<>'*') or (grandeurs[i]<>'/') then
+		begin
+		decoupage:=grandeurs[i];
+		end; 
+	i+=1;
+	end;
 dimension:='à coder grâce aux CODES ASCII';
-end;
+end;}
 
 procedure ajout(var f: fichiers; var t: tableau);
 var nom_fichier_ajout, nm, saisie: String;
