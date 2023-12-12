@@ -12,6 +12,9 @@ procedure SaisirTableau(var TabI:subtab ; var n:integer);
 procedure creationtableau(var tab_med: tableau1D) ;
 //procedure creationtableau(var tab_med: tableau1D) ;
 function CalculerMoyenne(tab_med:Tableau1D):real;
+function CalculerMediane(tab_med: Tableau1D): Real;
+function CalculerVariance(tab_med: tableau1D; CalculerMoyenne:real):real;
+function CalculerEcartType(CalculerVariance: Real): Real;
 
 Implementation
 
@@ -36,7 +39,7 @@ for i:=0 to n-1 do
 end; 
   
 procedure creationtableau(var tab_med: tableau1D) ;
-var n, eff_tot, i, k, j, pos_max, m, eff_tot_int:Integer;
+var i, k, j, m, n, eff_tot,pos_max, eff_tot_int:Integer;
 	TabI: subtab;
 	trouve_max: Boolean;
 	tab_val: tableau1D;
@@ -46,14 +49,13 @@ begin
 n:=3;
 setlength(TabI,n,2);
 TabI[0][0]:=2.9;
-TabI[0][1]:=10;
-TabI[1][0]:=3.6;
-TabI[1][1]:=7;
+TabI[0][1]:=2;
+TabI[1][0]:=2.6;
+TabI[1][1]:=1;
 TabI[2][0]:=-9.6;
-TabI[2][1]:=1;
+TabI[2][1]:=3;
 eff_tot:=0;
 eff_tot_int:=0;
-trouve_max:=False;
 setlength(tab_val,n);
 for i:=0 to n-1 do
 	begin
@@ -61,10 +63,11 @@ for i:=0 to n-1 do
 	tab_val[i]:=TabI[i][0];
 	end;
 setlength(tab_med,eff_tot);
-for k:=0 to n do
+for k:=0 to n - 1 do
 	begin
 	max:=MaxValue(tab_val);
 	j:=0;
+	trouve_max:=False;
 	while not(trouve_max) do
 		begin
 		if tab_val[j]=max then
@@ -74,42 +77,64 @@ for k:=0 to n do
 			end;
 		j+=1;
 		end;
-	TabI[pos_max][0]:=MinValue(tab_val)-1;
-	for m:=1 to Round(TabI[pos_max][1]) do
+	for m:=0 to Round(TabI[pos_max][1]) do
 		tab_med[eff_tot_int+m]:=max;
-	eff_tot_int+=Round(TabI[j][1]);
+	tab_val[k]:=MinValue(tab_val)-1;
+	eff_tot_int+=Round(TabI[k][1]);
 	end;
 end;
+
 function CalculerMoyenne(tab_med: Tableau1D): Real;
 var
   i: Integer;
   total: Real;
+  Result:real;
 begin
   total := 0;
   for i := 0 to High(tab_med) do
     total := total + tab_med[i];
   Result := total / (High(tab_med) + 1);
+  CalculerMoyenne:=Result;
+writeln('La moyenne est : ', CalculerMoyenne);
 end;
 
 function CalculerMediane(tab_med: Tableau1D): Real;
 var
   n: Integer;
+  Result:real;
 begin
+creationtableau(tab_med);
+  Result:=0;
+  CalculerMediane:=0;
   n := High(tab_med) + 1;
   if n mod 2 = 0 then
     Result := (tab_med[n div 2 - 1] + tab_med[n div 2]) / 2
   else
     Result := tab_med[n div 2];
+  CalculerMediane:=Result;
+writeln('La mediane est : ', CalculerMediane);
 end;
 
-function CalculerEcartType(tab_med: Tableau1D; moyenne: Real): Real;
+function CalculerVariance(tab_med: tableau1D; CalculerMoyenne:real):real;
 var
   i: Integer;
-  sommeCarres, ecartMoyen: Real;
+  Result, sommeCarres: Real;
 begin
   sommeCarres := 0;
   for i := 0 to High(tab_med) do
-    sommeCarres := sommeCarres + Power(tab_med[i] - moyenne, 2);
-  ecartMoyen := sommeCarres / (High(tab_med) + 1);
-  Result := Sqrt(ecartMoyen);
+    sommeCarres := sommeCarres + Power(tab_med[i] - CalculerMoyenne, 2);
+  Result := sommeCarres / (High(tab_med) + 1);
+  CalculerVariance:=Result;
+writeln('La variance est : ',CalculerVariance);
 end;
+
+function CalculerEcartType(CalculerVariance: Real): Real;
+var
+   Result:real;
+begin
+  Result := Sqrt(CalculerVariance);
+   CalculerEcartType:=Result;
+writeln('L''ecart type est : ', CalculerEcartType);
+end;
+
+end.
