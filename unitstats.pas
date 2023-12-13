@@ -9,11 +9,10 @@ type tableau1D=Array of Real;
 type subtab=array of Array of real;
 
 procedure SaisirTableau(var TabI:subtab ; var n:integer);
-procedure creationtableau(var tab_med: tableau1D) ;
-//procedure creationtableau(var tab_med: tableau1D) ;
+procedure creationtableau(var tab_med: tableau1D;const TabI: subtab) ;
 function CalculerMoyenne(tab_med:Tableau1D):real;
 function CalculerMediane(tab_med: Tableau1D): Real;
-function CalculerVariance(tab_med: tableau1D; CalculerMoyenne:real):real;
+function CalculerVariance(tab_med: tableau1D):real;
 function CalculerEcartType(CalculerVariance: Real): Real;
 
 Implementation
@@ -29,7 +28,7 @@ readln(n);
 setlength(TabI,n,2);
 for i:=0 to n-1 do
 	begin
-	writeln('saisissez la valeur de la case ');
+	writeln('saisissez la valeur de la case ',i);
 	readln(valeur);
 	TabI[i][0]:= valeur;
 	writeln('saisir l"effectif de cette valeur');
@@ -38,22 +37,23 @@ for i:=0 to n-1 do
 	end;
 end; 
   
-procedure creationtableau(var tab_med: tableau1D) ;
+procedure creationtableau(var tab_med: tableau1D;const TabI: subtab) ;
 var i, k, j, m, n, eff_tot,pos_max, eff_tot_int:Integer;
-	TabI: subtab;
+	
 	trouve_max: Boolean;
 	tab_val: tableau1D;
 	max: real;
 begin
 //SaisirTableau(TabI,n);
-n:=3;
+{n:=3;
 setlength(TabI,n,2);
 TabI[0][0]:=2.9;
 TabI[0][1]:=2;
 TabI[1][0]:=2.6;
 TabI[1][1]:=1;
 TabI[2][0]:=-9.6;
-TabI[2][1]:=3;
+TabI[2][1]:=3;}
+n:=Length(TabI);
 eff_tot:=0;
 eff_tot_int:=0;
 setlength(tab_val,n);
@@ -103,7 +103,7 @@ var
   n: Integer;
   Result:real;
 begin
-creationtableau(tab_med);
+
   Result:=0;
   CalculerMediane:=0;
   n := High(tab_med) + 1;
@@ -115,14 +115,15 @@ creationtableau(tab_med);
 writeln('La mediane est : ', CalculerMediane);
 end;
 
-function CalculerVariance(tab_med: tableau1D; CalculerMoyenne:real):real;
+function CalculerVariance(tab_med: tableau1D):real;
 var
   i: Integer;
-  Result, sommeCarres: Real;
+  Result, moyenne, sommeCarres: Real;
 begin
+  moyenne:=CalculerMoyenne(tab_med);
   sommeCarres := 0;
   for i := 0 to High(tab_med) do
-    sommeCarres := sommeCarres + Power(tab_med[i] - CalculerMoyenne, 2);
+    sommeCarres := sommeCarres + Power(tab_med[i] - moyenne, 2);
   Result := sommeCarres / (High(tab_med) + 1);
   CalculerVariance:=Result;
 writeln('La variance est : ',CalculerVariance);
