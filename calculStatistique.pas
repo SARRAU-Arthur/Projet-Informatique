@@ -1,13 +1,16 @@
 program CalculatriceStatistique;
 
 uses unitstats;
+var
+  TabI: subtab;
+  tab_med: tableau1D;
+  n: integer;
 
-var tab_med: tableau1D;
 begin
-//SaisirTableau(ti,n);
-//creationtableau(tab_med);
+SaisirTableau(TabI,n);
+creationtableau(tab_med,TabI);
 CalculerMediane(tab_med);
 CalculerMoyenne(tab_med);
 CalculerVariance(tab_med);
-CalculerEcartType(CalculerVariance);
+CalculerEcartType(CalculerVariance(tab_med));
 end.
