@@ -15,19 +15,37 @@ begin
 
 end;
 
+
+
 procedure poylnomiale_equation_order();
 var a,b,c,delta:Real;
 	x1,x2:ComplexNumber;
+	i,lastpoint:Integer;
+	equation:String;
 BEGIN
-		Writeln('example  equation : ax^2+bx+c');
-		Writeln('Ecrivez votre coefficient de a');
-		Readln(a);
-		Writeln('Ecrivez votre coefficient de b');
-		Readln(b);
-		Writeln('Ecrivez votre  c');
-		Readln(c);
+		Writeln('example  equation du second degre : ax^2+bx+c=0  quand a,b,c sont reels ' );
+		Readln(equation);
+		a:=0;b:=0;c:=0;
+		lastpoint:=0;
+		for i:=1 to length(equation) do
+			begin
+			 if ((equation[i] = 'x') and (equation[i+1] = '^')) then
+				begin
+					a:= (StrToFloat(Copy(equation, 1, i -1)));
+					lastpoint:=i+3;
+				end
+			 else if ((equation[i] = 'x') and (equation[i+1] <> '^') and (equation[i+1] = '+')) then
+			    begin
+					b:= StrToFloat((Copy(equation,lastpoint, i-lastpoint)));
+					lastpoint:=i+2;
+				end
+			 else if ((equation[i] <> 'x') and (equation[i+1] <> '^')and (equation[i] = '='))  then
+				begin
+					c:= StrToFloat(Copy(equation,lastpoint, i-lastpoint));
+				end;
+			end;	
 		delta:=deltasolution(a,b,c);
-  // calculer  les racines et imprimer
+		// calculer  les racines et imprimer
 		if (delta > 0) then
 			begin
 			x1.RealPart := FloatToStr((-b + Sqrt(delta)) / (2 * a));
@@ -56,7 +74,6 @@ BEGIN
 	
 
 END;
-
 
  function y(a, b: Real): String;
 	begin
@@ -138,9 +155,8 @@ var
 begin
   Writeln('Example: ay''''+by''+cy=d   quand a,b,c et d sont reels' );
   Writeln('Ecrivez equation differeantial avec ordre 2');
-  //Readln(equation);
-  equation:='2y''''+1y''+4y=5';
-  //a:=0;b:=0;c:=0;d:=0;
+  Readln(equation);
+  a:=0;b:=0;c:=0;d:=0;
   lastpoint:=0;
   for i:=1 to length(equation) do
 	begin
@@ -165,10 +181,7 @@ begin
 		 end;
 	
    end;
-   Writeln('a :', a);
-   Writeln('b :' , b);
-   Writeln('c :' , c);
-   writeln('d :' , d);
+  
    yH(a,b,c,x1,x2);
  
 	
@@ -176,13 +189,31 @@ begin
 end;
 
  
+procedure choix();
+var j:Integer;
+begin
+Writeln('Bienvenue');
+Writeln('1-Resoudre equation du second degre , 2-Resoudre equation ordre 1 , 3-Resoudre equation ordre 2');
+readln(j);
+	if(j = 1)then
+	begin
+		poylnomiale_equation_order();
+	end;
+	if(j = 2)then
+	begin
+		Equation_ordre_1();
+	end;
+	if(j = 3)then
+	begin
+		Equation_ordre_2();
+	end;	
+
+end;
+
+
 
 begin 
-Writeln('Bienvenue');
-//poylnomiale_equation_order();
-//Equation_ordre_1();
-Equation_ordre_2();
-//yH(1,20,4,x1,x2);
+choix();
 end.
 
 
