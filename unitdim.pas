@@ -9,26 +9,26 @@ Type tableau = Array of Array of String;
 Type constantes = Record
 	constante, valeur, unite, dimension: string
 	end;
+
+Type dimensions = Record
+	grandeur, dim_SI: string;
+	end;
 	
 Type conversions = Record
 	unite_i, unite_f, valeur_i: string
 	end;
 
-{Type dimensions = Record
-	grandeur: string
-	end;}
-
 Type fichiers = Record
 	cv: conversions;
-	ct: constantes
+	ct: constantes;
+	dm: dimensions
 	end;
 
 procedure fonctionnalites(var f: fichiers);
 function parcoursfichier(var currentfile: TextFile; nom: String): String;
 procedure chargementdonnees(var t:tableau; var nm: string; nom: string);
 function conversion(var currentfile: TextFile): Extended;
-function constante(var currentfile: TextFile): string;
-//function dimension (var currentfile: TextFile): string;
+function consulter(var currentfile: TextFile): string;
 procedure ajout(var f: fichiers);
 
 Implementation
@@ -47,28 +47,26 @@ repeat
 	begin
 	ClrScr();
 	writeln('Que souhaitez-vous realiser ?'); 
-	writeln('Entrez "cv" pour une conversions');
-	writeln('Entrez "ct" pour la valeur de constante');
-	//writeln('Entrez "dm" pour la dimension');
+	writeln('Entrez "cv" pour faire une conversions');
+	writeln('Entrez "cs" pour consulter des grandeurs caracteristiques');
 	writeln('Entrez "aj" pour ajouter des donnees');
 	write('Choix: ');
 	readln(choix);
 	ClrScr();
 	if choix='cv' then	
 		conversion(currentfile);
-	if choix='ct' then	
-		constante(currentfile);
+	if choix='cs' then	
+		consulter(currentfile);
 	if choix='aj' then	
 		ajout(f);
 	if choix='exit' then
 		exit;
-	{if choix='dm' then	
-		dimension(currentfile);}
-	if (choix<>'cv') and (choix<>'ct') and (choix<>'aj') then
+	if (choix<>'cv') and (choix<>'cs') and (choix<>'aj') then
 		begin
 		writeln('Saisie incorrecte');
 		valide:=False;
 		end;
+	writeln();
 	writeln('Souhaitez-vous continuer ? "o" / "n" : ');
 	choix:=ReadKey;
 	case choix of
@@ -263,57 +261,63 @@ else
 end;
 
 // Consultation valeur d'une constante physique
-function constante(var currentfile: TextFile): string;
-var nm: string;
+function consulter(var currentfile: TextFile): string;
+var nm, choix: string;
 	ct: constantes;
+	dm: dimensions;
 	i: Integer;
 	t: tableau;
 	trouve: Boolean;
 begin
-chargementdonnees(t,nm,'constantes');
-write('Constante dont vous souhaitez consulter la valeur: ');
-readln(ct.constante);
-trouve:=False;
+trouve:=True;
+write('Vous souhaitez: "ct" constantes / "dm" dimension: ');
+readln(choix);
+ClrScr;
 i:=0;
-while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
+if choix='ct' then
 	begin
-	if (t[i][0]=ct.constante) or (t[i][1]=ct.constante) then
+	chargementdonnees(t,nm,'constantes');
+	write('Constante dont vous souhaitez consulter la valeur: ');
+	readln(ct.constante);
+	while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
 		begin
-		ct.valeur:=t[i][2];
-		ct.unite:=t[i][3];
-		ct.constante:=t[i][0];
-		ct.dimension:=t[i][4];
-		trouve:=True;
+		if (t[i][0]=ct.constante) or (t[i][1]=ct.constante) then
+			begin
+			ct.valeur:=t[i][2];
+			ct.unite:=t[i][3];
+			ct.dimension:=t[i][4];
+			end
+		else
+			trouve:=False;
+		i+=1;
 		end;
-	i+=1;
+	consulter:=ct.constante + ' = ' + ct.valeur + ' ' + ct.unite + ' ; dimension = ' + ct.dimension ;
 	end;
+if choix='dm' then
+	begin
+	chargementdonnees(t,nm,'dimensions');
+	write('Grandeur dont vous souhaitez consulter la dimension: ');
+	readln(dm.grandeur);
+	while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
+		begin
+		if t[i][0]=dm.grandeur then
+			begin
+			dm.dim_SI:=t[i][1];
+			trouve:=True;
+			end
+		else
+			trouve:=False;
+		i+=1;
+		end;
+	consulter:=dm.grandeur + 'homogène à ' + ct.dimension ;
+	end
+else
+	trouve:=False;
 if trouve=False then
 	writeln('Saisie incorrecte, veuillez recommencer');
-constante:=ct.constante + ' = ' + ct.valeur + ' ' + ct.unite + ' ; dimension = ' + ct.dimension ;
 ClrScr();
-writeln(constante);
+writeln(consulter);
 end;
-
-{Determination de la dimension d'une operations de grandeurs
-function dimension (var currentfile: TextFile): string;
-var nm: string;
-	t: tableau;
-	decoupage: Array of 
-	grandeurs: string;
-begin
-writeln('Saisissez les grandeurs de votre problème');
-readln(grandeurs)
-chargementdonnees(t,nm,'dimensions');
-for i=1 to length(grandeurs) do
-	begin
-	if (grandeurs[i]<>'*') or (grandeurs[i]<>'/') then
-		begin
-		decoupage:=grandeurs[i];
-		end; 
-	i+=1;
-	end;
-dimension:='à coder grâce aux CODES ASCII';
-end;}
 
 // Ajout d'informations dans les fichiers de base de données
 procedure ajout(var f: fichiers);
