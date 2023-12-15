@@ -95,7 +95,7 @@ begin
     total := total + tab_med[i];
   Result := total / (High(tab_med) + 1);
   CalculerMoyenne:=Result;
-writeln('La moyenne est : ', CalculerMoyenne);
+//writeln('La moyenne est : ', CalculerMoyenne);
 end;
 
 function CalculerMediane(tab_med: Tableau1D): Real;
@@ -112,7 +112,7 @@ begin
   else
     Result := tab_med[n div 2];
   CalculerMediane:=Result;
-writeln('La mediane est : ', CalculerMediane);
+//writeln('La mediane est : ', CalculerMediane);
 end;
 
 function CalculerVariance(tab_med: tableau1D):real;
@@ -126,7 +126,7 @@ begin
     sommeCarres := sommeCarres + Power(tab_med[i] - moyenne, 2);
   Result := sommeCarres / (High(tab_med) + 1);
   CalculerVariance:=Result;
-writeln('La variance est : ',CalculerVariance);
+//writeln('La variance est : ',CalculerVariance);
 end;
 
 function CalculerEcartType(CalculerVariance: Real): Real;
@@ -135,7 +135,7 @@ var
 begin
   Result := Sqrt(CalculerVariance);
    CalculerEcartType:=Result;
-writeln('L''ecart type est : ', CalculerEcartType);
+//writeln('L''ecart type est : ', CalculerEcartType);
 end;
 
 end.
