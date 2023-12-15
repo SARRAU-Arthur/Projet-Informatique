@@ -1,7 +1,7 @@
 program StatsProgram;
 
 uses
-  unitstats;
+  unitstats,sysutils;
 
 var
   option: char;
@@ -34,25 +34,25 @@ begin
            end;
       '2': begin
              if tableauSaisi then
-               writeln('La moyenne est : ', CalculerMoyenne(tab_med))
+               writeln('La moyenne est : ',FloatToStr(CalculerMoyenne(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
       '3': begin
              if tableauSaisi then
-               writeln('La mediane est : ', CalculerMediane(tab_med))
+               writeln('La mediane est : ', FloatToStr(CalculerMediane(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
       '4': begin
              if tableauSaisi then
-               writeln('La variance est : ', CalculerVariance(tab_med))
+               writeln('La variance est : ', FloatToStr(CalculerVariance(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
       '5': begin
              if tableauSaisi then
-               writeln('L''ecart type est : ', CalculerEcartType(CalculerVariance(tab_med)))
+               writeln('L''ecart type est : ', FloatToStr(CalculerEcartType(CalculerVariance(tab_med))))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
