@@ -97,128 +97,147 @@ procedure enregistrement(var save_calc: TextFile);
 begin
 end;
 
-function calcul(s: String): Real;
-var
-i,closePos:Integer;
-s1, s2: String;
-begin
-i := Length(s);
-while i > 0 do
+	function calcul(s: String): Real;
+	var
+	i,closePos:Integer;
+	s1, s2: String;
+  
 	begin
-	if (s[i] = '(') then
+		i := Length(s);
+	   	while i > 0 do
 		begin
-		closePos := Parantehese(s, i + 1); // trouver la parantehese
-		s1 := Copy(s, i + 1, closePos - i - 1); // prendre entre les paratheses
-		s := Copy(s, 1, i - 1) + FloatToStr(calcul(s1)) + Copy(s, closePos + 1, Length(s)); // calcul 
-		i := Length(s); // calcul la longueur de s 
-		end
-	else
-		Dec(i);
-	end;
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = '+') or (s[i] = '-') then
+	    if (s[i] = '(') then
+		 begin
+			closePos := Parantehese(s, i + 1); // trouver la Parantehese
+			s1 := Copy(s, i + 1, closePos - i - 1); // prendre entre les paratehes
+			s := Copy(s, 1, i - 1) + FloatToStr(calcul(s1)) + Copy(s, closePos + 1,  Length(s)-(i-1)); // calcul 
+			i := Length(s); // calcul la length 
+		 end
+	    else
+        Dec(i);
+       end;
+
+		i := Length(s);
+		while i > 0 do
 		begin
-		s1 := Copy(s, 0, i - 1);
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		if s[i] = '+' then
-		calcul := calcul(s1) + calcul(s2)
-		else
-		calcul := calcul(s1) - calcul(s2);
-		exit;
-		end
-	else
-	i:=i-1;
-	end;
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = 'x') or (s[i] = '/') then
-		begin
-		s1 := Copy(s, 0, i - 1);
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		if s[i] = 'x' then
-			calcul := calcul(s1) * calcul(s2)
-		else
+			if (s[i] = '+') or (s[i] = '-') then
 			begin
-			calcul := calcul(s1) / calcul(s2);
+			if (i=1) and ((s[i] = '+') or (s[i] = '-')) then
+            begin
+             if  (s[i] = '+')  then
+			  begin
+			   s1 := '0';
+			   s2 := Copy(s, i + 1, Length(s)-(i-1));   
+               calcul := calcul(s1) + calcul(s2);
+               exit;
+             end;
+               if  (s[i] = '-')  then
+			  begin
+			  s1 := '0';
+			  s2 := Copy(s, i + 1, Length(s)-(i-1));   
+              calcul := calcul(s1) - calcul(s2);
+			  exit;
+			  end;
+            end;
+	 			s1 := Copy(s, 1, i - 1);
+				s2 := Copy(s, i + 1, Length(s)-(i-1));
+				if s[i] = '+' then
+				calcul := calcul(s1) + calcul(s2)
+				else
+				calcul := calcul(s1) - calcul(s2);
+				exit;
+				end
+			else
+			i:=i-1;
+		end;
+		i := Length(s);
+		while i > 0 do
+		begin
+			if (s[i] = 'x') or (s[i] = '/') then
+			begin
+				s1 := Copy(s, 1, i - 1);
+				s2 := Copy(s, i + 1, Length(s)-(i-1));
+				if s[i] = 'x' then
+					calcul := calcul(s1) * calcul(s2)
+				else
+					calcul := calcul(s1) / calcul(s2);
+					exit;
+				end
+			else
+			i:=i-1;
+	   end;
+	   i := Length(s);
+	   while i > 0 do
+	   begin
+		if (s[i] = 'l') then
+		begin
+			s1 := Copy(s, 1, i - 1);
+			s2 := Copy(s, i + 1, Length(s)-(i-1));
+			calcul := Logn(calcul(s1),calcul(s2));
 			exit;
-			end;
-		end
-	else
-		i:=i-1;
-	end;
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = 'l') then
+			end
+         else
+		 i:=i-1;
+        end;	
+        
+        i := Length(s);
+	   while i > 0 do
+	   begin
+		if (s[i] = 'r') then
 		begin
-		s1 := Copy(s, 0, i - 1);
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		calcul := Logn(calcul(s1),calcul(s2));
-		exit;
-		end
-	else
-		i:=i-1;
-	end;	
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = 'r') then
+         s1 := Copy(s, 1, i - 1);
+         s2 := Copy(s, i + 1, Length(s)-(i-1));
+			calcul :=  Sqrt(calcul(s2));
+			exit;
+			end
+         else
+		 i:=i-1;
+        end;	
+        i := Length(s);
+	   while i > 0 do
+	   begin
+		if (s[i] = 'e') then
 		begin
-		s1 := Copy(s, 0, i - 1);
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		calcul :=  Sqrt(calcul(s2));
-		exit;
-		end
-	else
+         s1 := Copy(s, 1, i - 1);
+         s2 := Copy(s, i + 1, Length(s)-(i-1));
+			calcul :=  Exp(calcul(s2));
+			exit;
+			end
+         else
+		 i:=i-1;
+        end;	
+       	i := Length(s);
+	     while i > 0 do
+	     begin
+		 if (s[i] = '^') then
+	    	begin
+            s1 := Copy(s, 0, i - 1);
+			s2 := Copy(s, i + 1, Length(s)-(i-1));
+			calcul := power(calcul(s1),calcul(s2));
+			exit;
+			end
+         else
 		i:=i-1;
-	end;	
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = 'e') then
+         end;
+        
+        i := Length(s);
+		while i > 0 do
 		begin
-		s1 := Copy(s, 0, i - 1);
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		calcul :=  Exp(calcul(s2));
-		exit;
-		end
-	else
-		i:=i-1;
-	end;	
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = '^') then
-		begin
-		s1 := Copy(s, 0, i - 1);
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		calcul := power(calcul(s1),calcul(s2));
-		exit;
-		end
-	else
-		i:=i-1;
-	end;
-i := Length(s);
-while i > 0 do
-	begin
-	if (s[i] = 'c') or (s[i] = 's') then
-		begin
-		s2 := Copy(s, i + 1, Length(s)-(i-1));
-		if s[i] = 'c' then
+		 if (s[i] = 'c') or (s[i] = 's') then
+		 begin
+			s2 := Copy(s, i + 1, Length(s)-(i-1));
+			if s[i] = 'c' then
 			calcul := cos(DegToRad(calcul(s2)))
-		else
-			begin
+			else
 			calcul := sin(DegToRad(calcul(s2)));
 			exit;
-			end;
-		end
-	else
-		i:=i-1;
-	end;		
-calcul := StrToFloat(s);
-end;
+			end
+		 else
+	     i:=i-1;
+         end;	
+     
+  calcul := StrToFloat(s);
+	
+  end;
 
 end.
