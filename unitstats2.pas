@@ -39,7 +39,7 @@ repeat
   writeln('Mediane = "3"');
   writeln('Variance = "4"');
   writeln('Ecart-type = "5"');
-  writeln('Enregistrement dans l"historique = "6"');
+  //writeln('Enregistrement dans l"historique = "6"');
   writeln('Quitter le menu statistiques = "q"');
   writeln;
   write('Choix: ');
@@ -53,25 +53,25 @@ repeat
            end;
       '2': begin
              if tableauSaisi then
-               writeln('La moyenne est : ', CalculerMoyenne(tab_med))
+               writeln('La moyenne est : ', FloatToStr(CalculerMoyenne(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
       '3': begin
              if tableauSaisi then
-               writeln('La mediane est : ', CalculerMediane(tab_med))
+               writeln('La mediane est : ', FloatToStr(CalculerMediane(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
       '4': begin
              if tableauSaisi then
-               writeln('La variance est : ', CalculerVariance(tab_med))
+               writeln('La variance est : ', FloatToStr(CalculerVariance(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
       '5': begin
              if tableauSaisi then
-               writeln('L''ecart type est : ', CalculerEcartType(CalculerVariance(tab_med)))
+               writeln('L''ecart type est : ', FloatToStr(CalculerEcartType(CalculerVariance(tab_med))))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
@@ -153,7 +153,7 @@ begin
     total := total + tab_med[i];
   Result := total / (High(tab_med) + 1);
   CalculerMoyenne := Result;
-  writeln('La moyenne est : ', CalculerMoyenne);
+  //writeln('La moyenne est : ', CalculerMoyenne);
 end;
 
 function CalculerMediane(tab_med: tableau1D): Real;
@@ -169,7 +169,7 @@ begin
   else
     Result := tab_med[n div 2];
   CalculerMediane := Result;
-  writeln('La mediane est : ', CalculerMediane);
+  //writeln('La mediane est : ', CalculerMediane);
 end;
 
 function CalculerVariance(tab_med: tableau1D): Real;
@@ -183,7 +183,7 @@ begin
     sommeCarres := sommeCarres + Power(tab_med[i] - moyenne, 2);
   Result := sommeCarres / (High(tab_med) + 1);
   CalculerVariance := Result;
-  writeln('La variance est : ', CalculerVariance);
+  //writeln('La variance est : ', CalculerVariance);
 end;
 
 function CalculerEcartType(CalculerVariance: Real): Real;
@@ -192,7 +192,8 @@ var
 begin
   Result := Sqrt(CalculerVariance);
   CalculerEcartType := Result;
-  writeln('L''ecart type est : ', CalculerEcartType);
+  //writeln('L''ecart type est : ', CalculerEcartType);
 end;
 
 end.
+
