@@ -13,7 +13,7 @@ procedure statistiques(var retour_menu: Boolean);
 procedure SaisirTableau(var TabI: subtab; var n: integer);
 procedure creationtableau(var tab_med: tableau1D; const TabI: subtab; n: integer);
 function CalculerMoyenne(const TabI: subtab): Real;
-function CalculerMediane(const TabI: subtab): Real;
+function CalculerMediane(tab_med: tableau1D): Real;
 function CalculerVariance(const TabI: subtab): Real;
 function CalculerEcartType(CalculerVariance: Real): Real;
 
@@ -58,7 +58,7 @@ begin
            end;
       '3': begin
              if tableauSaisi then
-               writeln('La mediane est : ', FloatToStr(CalculerMediane(TabI)))
+               writeln('La mediane est : ', FloatToStr(CalculerMediane(tab_med)))
              else
                writeln('Veuillez d''abord saisir le tableau.');
            end;
@@ -103,21 +103,38 @@ end;
 
 procedure creationtableau(var tab_med: tableau1D; const TabI: subtab; n: integer);
 var
-  i, k, m, eff_tot, eff_tot_int: Integer;
+  i, k, j, m, eff_tot, pos_max, eff_tot_int: Integer;
+  trouve_max: Boolean;
+  tab_val: tableau1D;
+  max: Real;
 begin
   n := Length(TabI);
   eff_tot := 0;
   eff_tot_int := 0;
-  SetLength(tab_med, eff_tot);
+  SetLength(tab_val, n);
   for i := 0 to n - 1 do
   begin
     eff_tot += Round(TabI[i][1]);
+    tab_val[i] := TabI[i][0];
   end;
   SetLength(tab_med, eff_tot);
   for k := 0 to n - 1 do
   begin
-    for m := 0 to Round(TabI[k][1]) - 1 do
-      tab_med[eff_tot_int + m] := TabI[k][0];
+    max := MaxValue(tab_val);
+    j := 0;
+    trouve_max := False;
+    while not (trouve_max) do
+    begin
+      if tab_val[j] = max then
+      begin
+        pos_max := j;
+        trouve_max := True;
+      end;
+      j += 1;
+    end;
+    for m := 0 to Round(TabI[pos_max][1]) - 1 do
+      tab_med[eff_tot_int + m] := max;
+    tab_val[k] := MinValue(tab_val) - 1;
     eff_tot_int += Round(TabI[k][1]);
   end;
 end;
@@ -143,38 +160,23 @@ begin
    CalculerMoyenne:=Result;
 end;
 
-function CalculerMediane(const TabI: subtab): Real;
+function CalculerMediane(tab_med: tableau1D): Real;
 var
-  i, j, n, m: Integer;
-  tab_val: tableau1D;
-  mediane, Result: Real;
+  n: Integer;
+  Result: Real;
 begin
-  n := Length(TabI);
-  m := 0;
-
-  for i := 0 to n - 1 do
-    m := m + Round(TabI[i][1]);
-
-  SetLength(tab_val, m);
-  m := 0;
-
-  for i := 0 to n - 1 do
-    for j := 1 to Round(TabI[i][1]) do
-    begin
-      tab_val[m] := TabI[i][0];
-      m := m + 1;
-    end;
-
-  n := Length(tab_val);
+  Result := 0;
+  n := High(tab_med) + 1;
 
   if n mod 2 = 0 then
-    mediane := (tab_val[n div 2 - 1] + tab_val[n div 2]) / 2
+    Result := (tab_med[n div 2 - 1] + tab_med[n div 2]) / 2
   else
-    mediane := tab_val[n div 2];
+    Result := tab_med[n div 2];
 
-  Result := mediane;
+  //writeln('La mediane est : ', Result);
   CalculerMediane := Result;
 end;
+
 
 function CalculerVariance(const TabI: subtab): Real;
 var
@@ -217,5 +219,6 @@ begin
 end;
 
 end.
+
 
 
