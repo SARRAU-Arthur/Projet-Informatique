@@ -1,0 +1,13 @@
+constante;abreviation;valeur;unite;dimension;
+gaz parfaits;gp;8.314;kg.m^2.s^-2.K^-1.mol^-1;M.L^2.T^-2.t^-1.N^-1;
+avogadro;av;6.022E+23;mol^-1;N^-1;
+celerite lumiere;c;3,0E+8;m.s^-1;L.T^-1;
+permitivite magnetique du vide;pm;4.0E-7;kg.m.A^-2.s^-2;M.L.I^-2.T^-2;
+gravitationnelle;g;6.67E-11;m^3.kg^-1.s^-1;L^3.M^-1.T^-1;
+planck;h;6.62E-34;kg.m^2.s^-1;M.T^-1.L^2;
+permitivite dielectrique du vide;pd;376.73;A^2.s^4.kg^-1.m^-3;I^2.T^4.M^-3;
+charge elementaire;e;1.60E-19;A.s;I.T;
+acceleration pesanteur terrestre;g;9.806;m.s^-2;L.T^-2;
+masse proton;mp;1.67E-27;kg;M;
+masse neutron;mn;1.67E-27;kg;M;
+masse electron;me;9.10E-31;kg;M;
