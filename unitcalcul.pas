@@ -69,6 +69,8 @@ Writeln('Example : =s90 ca veut dire sin(90) ');
 Writeln('Les 4 operations mathematique sont memes');
 Writeln('x pour la multiplication, + pour  addition, / pour la division, - pour la soustraction ');
 Writeln('nlx pour la logaritma ,n est la base ,x est la valeur et et l est la logaritma ');
+Writeln('e2 ca veut dire exponatielle carré');
+
 end;
 
 function parantehese(expression: String ;  openPos : Integer):Integer;
@@ -111,65 +113,90 @@ end;
 		i := Length(s);
 		while i > 0 do
 		 begin
-			   if ((s[i-1] = 'x')or (s[i-1] = '/') or (s[i-1] = '^') or (s[i-1] = 'r')  )or ((s[i] = '+') ) then
+			    if (s[i] = '-') and ((s[i-1] = 's') or(s[i-1] = 'c') )then 
+			  begin
+				s1 := Copy(s, 1, i - 1);
+				s2 := Copy(s, i , Length(s)-(i-1));
+				s2 := FloatToStr(StrToFloat(s2));
+				if s[i] = 'c' then
+				 calcul := cos(DegToRad(calcul(s2)))
+			    else
+				 calcul := sin(DegToRad(calcul(s2)));
+				 exit;			 
+			 end;			
+			   if ((s[i-1] = 'x')or (s[i-1] = '/') or (s[i-1] = '^')or (s[i-1] = 'r')  or(s[i-1] = 'c') or (s[i-1] = 's') )or ((s[i] = '+') ) then
              begin
 			  if( (s[i] = '+') and (s[i-1] = 'x'))then 
-			  begin
+				begin
 				s1 := Copy(s, 1, i - 1);
 				s2 := Copy(s, i , Length(s)-(i-1));
 				s2 := FloatToStr(StrToFloat(s2));
 				s:=s1+s2;
 			  end;
 			   if( (s[i] = '+') and (s[i-1] = '^'))then 
-			  begin
+				begin
 				s1 := Copy(s, 1, i - 1);
 				s2 := Copy(s, i , Length(s)-(i-1));
 				s2 := FloatToStr(StrToFloat(s2));
 				s:=s1+s2;
 			  end;	
 			    if( (s[i] = '+') and (s[i-1] = 'r'))then 
-			  begin
-				s1 := Copy(s, 1, i - 1);
-				s2 := Copy(s, i , Length(s)-(i-1));
-				s2 := FloatToStr(StrToFloat(s2));
-				s:=s1+s2;
-			  end;			
+				 begin
+					s1 := Copy(s, 1, i - 1);
+					s2 := Copy(s, i , Length(s)-(i-1));
+					s2 := FloatToStr(StrToFloat(s2));
+					s:=s1+s2;
+				end;			
 			    if( (s[i] = '+') and (s[i-1] = '/'))then 
-			  begin
-				s1 := Copy(s, 1, i - 1);
-				s2 := Copy(s, i , Length(s)-(i-1));
-				s2 := FloatToStr(StrToFloat(s2));
-				s:=s1+s2;
-			  end;				
+				 begin
+					s1 := Copy(s, 1, i - 1);
+					s2 := Copy(s, i , Length(s)-(i-1));
+					s2 := FloatToStr(StrToFloat(s2));
+					s:=s1+s2;
+			     end;	
+			    if( (s[i] = '+') and (s[i-1] = 'c'))then 
+				 begin
+					s1 := Copy(s, 1, i - 1);
+					s2 := Copy(s, i , Length(s)-(i-1));
+					s2 := FloatToStr(StrToFloat(s2));
+					s:=s1+s2;
+				 end;	
+			  	if( (s[i] = '+') and (s[i-1] = 'c'))then 
+				 begin
+					s1 := Copy(s, 1, i - 1);
+					s2 := Copy(s, i , Length(s)-(i-1));
+					s2 := FloatToStr(StrToFloat(s2));
+					s:=s1+s2;
+				 end;			
 			 end;			  
-			if ((s[i] = '+') or (s[i] = '-'))and ((s[i-1] <> 'x') and (s[i-1] <> '/') and (s[i-1] <> '^')) then
-			begin
-			if (i=1) and ((s[i] = '+') or (s[i] = '-')) then
-             begin
-              if  (s[i] = '+')  then
-			   begin
-			    s1 := '0';
-			    s2 := Copy(s, i + 1, Length(s)-(i-1));   
-                calcul := calcul(s1) + calcul(s2);
+			if ((s[i] = '+') or (s[i] = '-'))and ((s[i-1] <> 'x') and (s[i-1] <> '/') and (s[i-1] <> '^') and (s[i-1] <> 'r')and (s[i-1] <>' c') and  (s[i-1] <>'s')) then
+			 begin
+			  if (i=1) and ((s[i] = '+') or (s[i] = '-')) then
+              begin
+               if  (s[i] = '+')  then
+			    begin
+			     s1 := '0';
+			     s2 := Copy(s, i + 1, Length(s)-(i-1));   
+                 calcul := calcul(s1) + calcul(s2);
                  exit;
-			   end;
-              if  (s[i] = '-')  then
-			   begin
-			    s1 := '0';
-				s2 := Copy(s, i + 1, Length(s)-(i-1));   
-				calcul := calcul(s1) - calcul(s2);
+			    end;
+               if  (s[i] = '-')  then
+			    begin
+			     s1 := '0';
+				 s2 := Copy(s, i + 1, Length(s)-(i-1));   
+				 calcul := calcul(s1) - calcul(s2);
 				 exit;
 				end;
-		      end;
-	 			s1 := Copy(s, 1, i - 1);
-				s2 := Copy(s, i + 1, Length(s)-(i-1));
+		       end;
+	 		   s1 := Copy(s, 1, i - 1);
+			   s2 := Copy(s, i + 1, Length(s)-(i-1));
 
-				if s[i] = '+' then
-				calcul := calcul(s1) + calcul(s2)
-				else
-				calcul := calcul(s1) - calcul(s2);
+			   if s[i] = '+' then
+			    calcul := calcul(s1) + calcul(s2)
+			   else
+			    calcul := calcul(s1) - calcul(s2);
 				exit;
-				end
+			    end
 			else
 			i:=i-1;
 		 end;
@@ -236,51 +263,45 @@ end;
         end;	
         i := Length(s);
 	   while i > 0 do
-	   begin
-		if (s[i] = 'e') then
-		begin
-         s1 := Copy(s, 1, i - 1);
-         s2 := Copy(s, i + 1, Length(s)-(i-1));
+	    begin
+		 if (s[i] = 'e') then
+		  begin
+			s1 := Copy(s, 1, i - 1);
+			s2 := Copy(s, i + 1, Length(s)-(i-1));
 			calcul :=  Exp(calcul(s2));
 			exit;
-			end
+		   end
          else
 		 i:=i-1;
         end;	
        	i := Length(s);
 	     while i > 0 do
-	     begin
-	    if (s[i] = '^') and (s[i+1] = '-') then
-	     begin
-	     s1 := Copy(s, 0, i - 1);Writeln(s1);
-	     s2 := Copy(s, i+1 , Length(s)-(i-1));
-	     calcul := power(calcul(s1),calcul(s2));
-	     end;	    
-		 if (s[i] = '^')  and (s[i+1] <> '-')then
-	    	begin
-            s1 := Copy(s, 0, i - 1);
-			s2 := Copy(s, i + 1, Length(s)-(i-1));
-			calcul := power(calcul(s1),calcul(s2));
-			exit;
-			end
-         else
-		i:=i-1;
-         end;
+	      begin    
+			if (s[i] = '^') then
+			 begin
+				s1 := Copy(s, 0, i - 1);
+				s2 := Copy(s, i + 1, Length(s)-(i-1));
+				calcul := power(calcul(s1),calcul(s2));
+				exit;
+			 end
+			else
+			i:=i-1;
+          end;
         
         i := Length(s);
 		while i > 0 do
-		begin
-		 if (s[i] = 'c') or (s[i] = 's') then
-		 begin
+		 begin		
+		  if (s[i] = 'c') or (s[i] = 's') then
+		   begin
 			s2 := Copy(s, i + 1, Length(s)-(i-1));
 			if s[i] = 'c' then
-			calcul := cos(DegToRad(calcul(s2)))
+			 calcul := cos(DegToRad(calcul(s2)))
 			else
-			calcul := sin(DegToRad(calcul(s2)));
-			exit;
+			 calcul := sin(DegToRad(calcul(s2)));
+			 exit;
 			end
-		 else
-	     i:=i-1;
+		  else
+	      i:=i-1;
          end;	
      
   calcul := StrToFloat(s);
