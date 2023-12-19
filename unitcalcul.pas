@@ -69,7 +69,7 @@ Writeln('Example : =s90 ca veut dire sin(90) ');
 Writeln('Les 4 operations mathematique sont memes');
 Writeln('x pour la multiplication, + pour  addition, / pour la division, - pour la soustraction ');
 Writeln('nlx pour la logaritma ,n est la base ,x est la valeur et et l est la logaritma ');
-Writeln('e2 ca veut dire exponatielle carré');
+Writeln('e2 ca veut dire exponatielle carre');
 
 end;
 
@@ -124,6 +124,14 @@ end;
 				 calcul := sin(DegToRad(calcul(s2)));
 				 exit;			 
 			 end;			
+			  
+			    if (s[i] = '-') and ((s[i-1] = '^')  )then 
+			  begin
+				s1 := Copy(s, 1, i - 1);
+				s2 := Copy(s, i , Length(s)-(i-1));
+				s2 := FloatToStr(StrToFloat(s2));
+			  end;
+				
 			   if ((s[i-1] = 'x')or (s[i-1] = '/') or (s[i-1] = '^')or (s[i-1] = 'r')  or(s[i-1] = 'c') or (s[i-1] = 's') )or ((s[i] = '+') ) then
              begin
 			  if( (s[i] = '+') and (s[i-1] = 'x'))then 
@@ -282,8 +290,13 @@ end;
 				s1 := Copy(s, 0, i - 1);
 				s2 := Copy(s, i + 1, Length(s)-(i-1));
 				calcul := power(calcul(s1),calcul(s2));
+			 if (StrToFloat(s2)mod 2 = 0 )then
+			  begin
+				 calcul := calcul*-1;
+			  end;
 				exit;
 			 end
+			 
 			else
 			i:=i-1;
           end;
