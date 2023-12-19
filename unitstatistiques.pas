@@ -294,28 +294,37 @@ begin
   CalculerEcartType:=Result;
 end;
 
-procedure regression_lineaire(var TabI: subtab; var   tab_med: Tableau1D ;var a, b, r_squared: Real);
-var i: integer;
-    s_n, s_d, y_mean: Real;
+procedure regression_lineaire(var TabI: subtab; var tab_med: Tableau1D; var a, b, r_squared: Real);
+var
+  i: integer;
+  s_n, s_d, x_mean, y_mean: Real;
 begin
-s_n:=0;
-s_d:=0;
-y_mean:=0;
-for i:=0 to length(TabI)-1 do
+  s_n := 0;
+  s_d := 0;
+  x_mean := 0;
+  y_mean := 0;
+
+  for i := 0 to High(TabI) do
   begin
-  y_mean+=TabI[i][1];
-  a+=TabI[i][1]/TabI[i][0];
+    x_mean += TabI[i][0];
+    y_mean += TabI[i][1];
   end;
-a/=length(TabI);Writeln(a);
-y_mean/=length(tab_med)-1;
-b:=TabI[i][1]-a*TabI[i][0];
-for i:=0 to length(tab_med)-1 do
+
+  x_mean /= Length(TabI);
+  y_mean /= Length(TabI);
+
+  for i := 0 to High(TabI) do
   begin
-  s_n+=Power(TabI[i][1]-(a*TabI[i][0]+b),2);
-  s_d+=Power(TabI[i][1]-y_mean,2);
+    s_n += (TabI[i][0] - x_mean) * (TabI[i][1] - y_mean);
+    s_d += Power(TabI[i][0] - x_mean, 2);
   end;
-r_squared:=1-s_n/s_d;
+
+  a := s_n / s_d;
+  b := y_mean - a * x_mean;
+
+  r_squared := s_n / Sqrt(s_d * Power(Length(TabI), 2));
 end;
+
 
 end.
 
