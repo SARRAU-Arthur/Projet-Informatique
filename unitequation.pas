@@ -13,10 +13,11 @@ procedure poylnomiale_equation_order();
 function y(a, b: Real): String;
 procedure Equation_ordre_1();
 procedure  Equation_ordre_2();
+procedure yH(a, b,c: Real  ; var  x1,x2:ComplexNumber);
 
 Implementation
 
-uses Sysutils,  Math, unitcalcul;
+uses Crt,Sysutils,  Math, unitcalcul;
 
 procedure equation(var retour_menu: Boolean);
 var j: string;
@@ -24,6 +25,7 @@ begin
 retour_menu:=False;
 writeln('Bienvenu.e.s dans la section resolution d"equations');
 writeln();
+repeat
 Writeln('Resoudre une equation differentielle d"ordre 1 = "1"');
 Writeln('Resoudre une equation differentielle d"ordre 2 = "2"');
 Writeln('Resoudre une equation du second degre = "3"'); 
@@ -32,15 +34,29 @@ writeln;
 write('Choix: ');
 readln(j);
 if j='1' then
+	begin
 	Equation_ordre_1();
-if j='2' then
+	end
+else if j='2' then
+	begin
 	Equation_ordre_2();
-if j='3' then
+	end
+else if j='3' then
+	begin
 	poylnomiale_equation_order();
-if j='q' then
-	retour_menu:=True;
-end;
+	end
+else
+   begin
+     if j = 'q' then
+            retour_menu := True
+     else
+        writeln('Saisie incorrecte');
+    end;
 
+until retour_menu;
+ClrScr();
+
+end;
 function deltasolution(var a,b,c:Real): Real;
 begin
 deltasolution:= b * b - 4 * a * c;
@@ -111,7 +127,7 @@ var	solution, equation: String;
   	b, a: Real;
   	i, j: Integer;
 begin
-Writeln('Ecrivez une equation differeantielle d"ordre 2');
+Writeln('Ecrivez une equation differeantielle d"ordre 1');
 Writeln('Exemple: y''=ay+b avec a,b des reels' );
 Write('Equation: ');
 Readln(equation);
