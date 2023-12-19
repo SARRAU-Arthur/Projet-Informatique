@@ -11,7 +11,7 @@ type
 
 procedure statistiques(var retour_menu: Boolean);
 procedure SaisirTableau(var TabI: subtab; var n: integer);
-procedure creationtableau(var tab_med: tableau1D; const TabI: subtab; n: integer);
+procedure creationtableau(var tab_med: tableau1D; const TabI:subtab);
 function CalculerMoyenne(const TabI: subtab): Real;
 function CalculerMediane(tab_med: tableau1D): Real;
 function CalculerVariance(const TabI: subtab): Real;
@@ -27,7 +27,7 @@ var
   option: char;
   n: integer;
   TabI: subtab;
-  tab_med: tableau1D;
+  tab_med: tableau1D=nil;
   tableauSaisi: boolean;
 begin
   tableauSaisi := False;
@@ -47,7 +47,7 @@ begin
     case option of
       '1': begin
              SaisirTableau(TabI, n);
-             creationtableau(tab_med, TabI, n);
+             creationtableau(tab_med, TabI);
              tableauSaisi := True;
            end;
       '2': begin
@@ -101,29 +101,35 @@ begin
   end;
 end;
 
-procedure creationtableau(var tab_med: tableau1D; const TabI: subtab; n: integer);
+procedure creationtableau(var tab_med: tableau1D; const TabI:subtab);
 var
-  i, k, j, m, eff_tot, pos_max, eff_tot_int: Integer;
+  n, eff_tot, i, k, j, pos_max, m, eff_tot_int: Integer;
   trouve_max: Boolean;
+  
   tab_val: tableau1D;
   max: Real;
 begin
-  n := Length(TabI);
+  
+
   eff_tot := 0;
   eff_tot_int := 0;
   SetLength(tab_val, n);
+
   for i := 0 to n - 1 do
   begin
     eff_tot += Round(TabI[i][1]);
     tab_val[i] := TabI[i][0];
   end;
+
   SetLength(tab_med, eff_tot);
+
   for k := 0 to n - 1 do
   begin
     max := MaxValue(tab_val);
     j := 0;
     trouve_max := False;
-    while not (trouve_max) do
+
+    while not (trouve_max) and (j < n) do
     begin
       if tab_val[j] = max then
       begin
@@ -132,12 +138,17 @@ begin
       end;
       j += 1;
     end;
-    for m := 0 to Round(TabI[pos_max][1]) - 1 do
-      tab_med[eff_tot_int + m] := max;
-    tab_val[k] := MinValue(tab_val) - 1;
-    eff_tot_int += Round(TabI[k][1]);
+
+    if trouve_max then
+    begin
+      TabI[pos_max][0] := MinValue(tab_val) - 1;
+      for m := 1 to Round(TabI[pos_max][1]) do
+        tab_med[eff_tot_int + m] := max;
+      eff_tot_int += Round(TabI[pos_max][1]);
+    end;
   end;
 end;
+
 
 function CalculerMoyenne(const TabI: subtab): Real;
 var
