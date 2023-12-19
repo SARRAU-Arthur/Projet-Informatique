@@ -19,12 +19,12 @@ Type tableau = Array of Array of String;
 procedure statistiques(var retour_menu: Boolean);
 procedure tab_real_to_str(var t: tableau;var TabI: subtab);
 procedure SaisirTableau(var TabI:subtab ; var n: integer);
-procedure creationtableau(var tab_med: tableau1D;const TabI: subtab) ;
-function CalculerMoyenne(const TabI: subtab): Real;
-function CalculerMediane(const TabI: subtab): Real;
-function CalculerVariance(const TabI: subtab): Real;
+procedure creationtableau(var tab_med: tableau1D;var TabI: subtab) ;
+function CalculerMoyenne(var TabI: subtab): Real;
+function CalculerMediane(var tab_med: tableau1D): Real;
+function CalculerVariance(var TabI: subtab): Real;
 function CalculerEcartType(CalculerVariance: Real): Real;
-procedure regression_lineaire(var TabI: subtab; var a, b, r_squared: Real);
+procedure regression_lineaire(var TabI: subtab; var   tab_med: Tableau1D ;var a, b, r_squared: Real);
 //procedure enregistrement(var save_stat: TextFile);
 
 Implementation
@@ -84,7 +84,7 @@ repeat
     '3': 
       begin
       if tableauSaisi then
-        write('Mediane = ', FloatToStr(CalculerMediane(TabI)))
+        write('Mediane = ', FloatToStr(CalculerMediane(tab_med)))
       else
         writeln('Saisissez les donnees suivantes:');
       end;
@@ -106,7 +106,7 @@ repeat
       begin
         if tableauSaisi then
         begin
-          regression_lineaire(TabI, a, b, r_squared);
+          regression_lineaire(TabI,tab_med, a, b, r_squared);
           //writeln('La regression lineaire est de la forme : Y = ', a, 'X + ', b);
           writeln('a= ',a,' b= ',b,' R^2= ',r_squared);
         end
@@ -124,16 +124,22 @@ repeat
 end;
 
 procedure tab_real_to_str(var t: tableau;var TabI: subtab);
-var i, j: integer;
-    nm: string;
+var i, j, k: integer;
+    nm, affichage: string;
 begin
 chargementdonnees(t,nm,'stats');
 setlength(TabI,(StrToInt(nm)-StrToInt(nm) mod 10) div 10,StrToInt(nm) mod 10);
 for i:=0 to (StrToInt(nm)-StrToInt(nm) mod 10) div 10 - 1 do
 	begin
+		affichage:='';
+
 	for j:=0 to StrToInt(nm) mod 10 - 1 do
+	begin
 		TabI[i][j]:=StrToFloat(t[i][j]);
+		affichage:=affichage + ' ' + FloatToStr(TabI[i][j]);
 	end;
+	writeln(affichage);
+end;
 end;
 
 procedure SaisirTableau(var TabI: subtab; var n: integer);
@@ -155,97 +161,100 @@ begin
   end;
 end;
 
-procedure creationtableau(var tab_med: tableau1D;const TabI: subtab) ;
-var i, k, j, m, n, eff_tot,pos_max, eff_tot_int: Integer;
-	  trouve_max: Boolean;
-	  tab_val: tableau1D;
-	  max: real;
+procedure creationtableau(var tab_med: tableau1D; var TabI: subtab);
+var
+  n, eff_tot, i, k, j, pos_max, m, eff_tot_int: Integer;
+  trouve_max: Boolean;
+  tab_val: tableau1D;
+  max: Real;
 begin
-n:=Length(TabI);
-eff_tot:=0;
-eff_tot_int:=0;
-setlength(tab_val,n);
-for i:=0 to n-1 do
-	begin
-	eff_tot+=Round(TabI[i][1]);
-	tab_val[i]:=TabI[i][0];
-	end;
-setlength(tab_med,eff_tot);
-for k:=0 to n - 1 do
-	begin
-	max:=MaxValue(tab_val);
-	j:=0;
-	trouve_max:=False;
-	while not(trouve_max) do
-		begin
-		if tab_val[j]=max then
-			begin
-			pos_max:=j;
-			trouve_max:=True;
-			end;
-		j+=1;
-		end;
-	for m:=0 to Round(TabI[pos_max][1]) do
-		tab_med[eff_tot_int+m]:=max;
-	tab_val[k]:=MinValue(tab_val)-1;
-	eff_tot_int+=Round(TabI[k][1]);
-	end;
+  n := Length(TabI);
+  eff_tot := 0;
+  eff_tot_int := 0;
+  trouve_max := False;
+  SetLength(tab_val, n);
+  for i := 0 to n - 1 do
+  begin
+    eff_tot += Round(TabI[i][1]);
+    tab_val[i] := TabI[i][0];
+  end;
+SetLength(tab_med, eff_tot);
+
+  for k := 0 to n - 1 do
+  begin
+    max := MaxValue(tab_val);
+    j := 0;
+    trouve_max := False;
+
+    while not (trouve_max) do
+    begin
+      if tab_val[j] = max then
+      begin
+        pos_max := j;
+        trouve_max := True;
+      end;
+      j += 1;
+    end;
+
+    for m := 0 to Round(TabI[pos_max][1]) - 1 do
+    begin
+      tab_med[eff_tot_int + m] := max;
+    end;
+
+    tab_val[pos_max] := MinValue(tab_val) - 1;
+    eff_tot_int += Round(TabI[pos_max][1]);
+  end;
 end;
 
-function CalculerMoyenne(const TabI: subtab): Real;
-var i: Integer;
-  total, Result, effectifTotal: Real;
+
+
+
+function CalculerMoyenne(var TabI: subtab): Real;
+var
+  i: Integer;
+  sommeValeurs, Result, sommeEffectifs: Real;
 begin
-  total := 0;
-  effectifTotal := 0;
+  sommeValeurs := 0;
+  sommeEffectifs := 0;
 
   for i := 0 to High(TabI) do
   begin
-    total := total + (TabI[i][0] * TabI[i][1]);
-    effectifTotal := effectifTotal + TabI[i][1];
+    sommeValeurs := sommeValeurs + (TabI[i][0] * TabI[i][1]);
+    sommeEffectifs := sommeEffectifs + TabI[i][1];
   end;
 
-  if effectifTotal <> 0 then
-    Result := total / effectifTotal
+  if sommeEffectifs <> 0 then
+    Result := sommeValeurs / sommeEffectifs
   else
     Result := 0;
-   CalculerMoyenne:=Result;
+
+  CalculerMoyenne := Result;
 end;
 
-function CalculerMediane(const TabI: subtab): Real;
+
+
+
+
+
+function CalculerMediane(var tab_med: tableau1D): Real;
 var
-  i, j, n, m: Integer;
-  tab_val: tableau1D;
-  mediane, Result: Real;
+  n: Integer;
+  Result: Real;
 begin
-  n := Length(TabI);
-  m := 0;
-
-  for i := 0 to n - 1 do
-    m := m + Round(TabI[i][1]);
-
-  SetLength(tab_val, m);
-  m := 0;
-
-  for i := 0 to n - 1 do
-    for j := 1 to Round(TabI[i][1]) do
-    begin
-      tab_val[m] := TabI[i][0];
-      m := m + 1;
-    end;
-
-  n := Length(tab_val);
+  Result := 0;
+  n := High(tab_med) + 1;
 
   if n mod 2 = 0 then
-    mediane := (tab_val[n div 2 - 1] + tab_val[n div 2]) / 2
+    Result := (tab_med[n div 2 - 1] + tab_med[n div 2]) / 2
   else
-    mediane := tab_val[n div 2];
+    Result := tab_med[n div 2];
 
-  Result := mediane;
+  //writeln('La mediane est : ', Result);
   CalculerMediane := Result;
 end;
 
-function CalculerVariance(const TabI: subtab): Real;
+
+function CalculerVariance(var TabI: subtab): Real;
 var
   i, j, n, m: Integer;
   Result, moyenne, sommeCarres: Real;
@@ -285,20 +294,19 @@ begin
   CalculerEcartType:=Result;
 end;
 
-procedure regression_lineaire(var TabI: subtab; var a, b, r_squared: Real);
+procedure regression_lineaire(var TabI: subtab; var   tab_med: Tableau1D ;var a, b, r_squared: Real);
 var i: integer;
     s_n, s_d, y_mean: Real;
-    tab_med: Tableau1D;
 begin
 s_n:=0;
 s_d:=0;
 y_mean:=0;
-for i:=0 to length(tab_med)-1 do
+for i:=0 to length(TabI)-1 do
   begin
   y_mean+=TabI[i][1];
   a+=TabI[i][1]/TabI[i][0];
   end;
-a/=length(tab_med)-1;
+a/=length(TabI);Writeln(a);
 y_mean/=length(tab_med)-1;
 b:=TabI[i][1]-a*TabI[i][0];
 for i:=0 to length(tab_med)-1 do
@@ -310,3 +318,4 @@ r_squared:=1-s_n/s_d;
 end;
 
 end.
+
