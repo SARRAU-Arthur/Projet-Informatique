@@ -24,7 +24,7 @@ function CalculerMoyenne(var TabI: subtab): Real;
 function CalculerMediane(var tab_med: tableau1D): Real;
 function CalculerVariance(var TabI: subtab): Real;
 function CalculerEcartType(CalculerVariance: Real): Real;
-procedure regression_lineaire(var TabI: subtab; var   tab_med: Tableau1D ;var a, b, r_squared: Real);
+procedure regression_lineaire(var TabI: subtab; var   tab_med: Tableau1D ;var a, b, r_carre: Real);
 //procedure enregistrement(var save_stat: TextFile);
 
 Implementation
@@ -38,8 +38,11 @@ var option: char;
     tab_med: tableau1D;
     tableauSaisi: boolean;
     t:tableau;
-    a, b, r_squared: real;
+    a, b, r_carre: real;
 begin
+r_carre := 0;
+    a := 0;
+    b := 0;
 tableauSaisi:= False;
 retour_menu:=False;
 writeln('Bienvenu.e.s dans la section statistiques'); 
@@ -106,9 +109,9 @@ repeat
       begin
         if tableauSaisi then
         begin
-          regression_lineaire(TabI,tab_med, a, b, r_squared);
+          regression_lineaire(TabI,tab_med, a, b, r_carre);
           //writeln('La regression lineaire est de la forme : Y = ', a, 'X + ', b);
-          writeln('a= ',a,' b= ',b,' R^2= ',r_squared);
+          writeln('a= ',FloatToStr(a),' b= ',FloatToStr(b),' R^2= ',FloatToStr(r_carre));
         end
         else
           writeln('Saisissez les données suivantes:');
@@ -294,13 +297,15 @@ begin
   CalculerEcartType:=Result;
 end;
 
-procedure regression_lineaire(var TabI: subtab; var tab_med: Tableau1D; var a, b, r_squared: Real);
+procedure regression_lineaire(var TabI: subtab; var tab_med: Tableau1D; var a, b, r_carre: Real);
 var
   i: integer;
-  s_n, s_d, x_mean, y_mean: Real;
+  s_n, s_d, ssr, sst, x_mean, y_mean: Real;
 begin
   s_n := 0;
   s_d := 0;
+  ssr := 0; // somme des carrés des résidus
+  sst := 0; // somme totale des carrés
   x_mean := 0;
   y_mean := 0;
 
@@ -317,14 +322,24 @@ begin
   begin
     s_n += (TabI[i][0] - x_mean) * (TabI[i][1] - y_mean);
     s_d += Power(TabI[i][0] - x_mean, 2);
+
+    ssr += Power(TabI[i][1] - (a * TabI[i][0] + b), 2);
+    sst += Power(TabI[i][1] - y_mean, 2);
   end;
 
-  a := s_n / s_d;
-  b := y_mean - a * x_mean;
-
-  r_squared := s_n / Sqrt(s_d * Power(Length(TabI), 2));
+  if (s_d <> 0) and (sst <> 0) then
+  begin
+    a := s_n / s_d;
+    b := y_mean - a * x_mean;
+    r_carre := Power(s_n / (Sqrt(s_d) * Sqrt(sst)), 2);
+  end
+  else
+  begin
+    a := 0;
+    b := 0;
+    r_carre := 0;
+  end;
 end;
-
-
 end.
+
 
