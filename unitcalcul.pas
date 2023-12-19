@@ -131,8 +131,13 @@ end;
 				s2 := Copy(s, i , Length(s)-(i-1));
 				s2 := FloatToStr(StrToFloat(s2));
 			  end;
-				
-			   if ((s[i-1] = 'x')or (s[i-1] = '/') or (s[i-1] = '^')or (s[i-1] = 'r')  or(s[i-1] = 'c') or (s[i-1] = 's') )or ((s[i] = '+') ) then
+				   if (s[i] = '-') and ((s[i-1] = 'e')  )then 
+			  begin
+				s1 := Copy(s, 1, i - 1);
+				s2 := Copy(s, i , Length(s)-(i-1));
+				s2 := FloatToStr(StrToFloat(s2));
+			  end;
+			   if ((s[i-1] = 'x')or (s[i-1] = '/') or (s[i-1] = '^')or (s[i-1] = 'e') or(s[i-1] = 'r')  or(s[i-1] = 'c') or (s[i-1] = 's') )or ((s[i] = '+') ) then
              begin
 			  if( (s[i] = '+') and (s[i-1] = 'x'))then 
 				begin
@@ -169,15 +174,21 @@ end;
 					s2 := FloatToStr(StrToFloat(s2));
 					s:=s1+s2;
 				 end;	
-			  	if( (s[i] = '+') and (s[i-1] = 'c'))then 
+			  	if( (s[i] = '+') and (s[i-1] = 's'))then 
 				 begin
 					s1 := Copy(s, 1, i - 1);
 					s2 := Copy(s, i , Length(s)-(i-1));
 					s2 := FloatToStr(StrToFloat(s2));
 					s:=s1+s2;
-				 end;			
+				 end;		
+				 	   if (s[i] = '+') and ((s[i-1] = 'e')  )then 
+				begin
+				s1 := Copy(s, 1, i - 1);
+				s2 := Copy(s, i , Length(s)-(i-1));
+				s2 := FloatToStr(StrToFloat(s2));
+			  end;	
 			 end;			  
-			if ((s[i] = '+') or (s[i] = '-'))and ((s[i-1] <> 'x') and (s[i-1] <> '/') and (s[i-1] <> '^') and (s[i-1] <> 'r')and (s[i-1] <>' c') and  (s[i-1] <>'s')) then
+			if ((s[i] = '+') or (s[i] = '-'))and ((s[i-1] <> 'x') and (s[i-1] <> 'e') and (s[i-1] <> '/') and (s[i-1] <> '^') and (s[i-1] <> 'r')and (s[i-1] <>' c') and  (s[i-1] <>'s')) then
 			 begin
 			  if (i=1) and ((s[i] = '+') or (s[i] = '-')) then
               begin
