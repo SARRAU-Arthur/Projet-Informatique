@@ -130,6 +130,9 @@ end;
 				s1 := Copy(s, 1, i - 1);
 				s2 := Copy(s, i , Length(s)-(i-1));
 				s2 := FloatToStr(StrToFloat(s2));
+				calcul := power(calcul(s1),calcul(s2));
+				exit;
+				
 			  end;
 				   if (s[i] = '-') and ((s[i-1] = 'e')  )then 
 			  begin
@@ -301,10 +304,7 @@ end;
 				s1 := Copy(s, 0, i - 1);
 				s2 := Copy(s, i + 1, Length(s)-(i-1));
 				calcul := power(calcul(s1),calcul(s2));
-			 if (StrToFloat(s2)mod 2 = 0 )then
-			  begin
-				 calcul := calcul*-1;
-			  end;
+		
 				exit;
 			 end
 			 
