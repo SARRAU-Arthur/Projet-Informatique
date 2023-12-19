@@ -24,7 +24,7 @@ Type fichiers = Record
 	dm: dimensions
 	end;
 
-procedure unites({var f: fichiers;}var retour_menu: Boolean);
+procedure unites(var retour_menu: Boolean);
 function parcoursfichier(var currentfile: TextFile; nom: String): String;
 procedure chargementdonnees(var t:tableau; var nm: string; nom: string);
 function conversion(var currentfile: TextFile): Extended;
@@ -36,7 +36,7 @@ Implementation
 uses Sysutils, Math, Crt;
 
 // Programme principale de l'unite
-procedure unites({var f: fichiers;}var retour_menu: Boolean);
+procedure unites(var retour_menu: Boolean);
 var choix: string; 
 		currentfile: TextFile;
 		f: fichiers;
@@ -46,7 +46,6 @@ choix:='';
 ClrScr();
 writeln('Bienvenu.e.s dans la section unites et conversions');
 repeat
-	begin
 	writeln();
 	writeln('Que souhaitez-vous realiser ?'); 
 	writeln('Convertir des unites = "cv"');
@@ -58,16 +57,15 @@ repeat
 	readln(choix);
 	ClrScr();
 	if choix='cv' then	
-		conversion(currentfile);
-	if choix='cs' then	
-		consulter(currentfile);
-	if choix='aj' then	
-		ajout(f);
-	if choix='q' then
+		conversion(currentfile)
+	else if choix='cs' then	
+		consulter(currentfile)
+	else if choix='aj' then	
+		ajout(f)
+	else if choix='q' then
 		retour_menu:=True
 	else
 		writeln('Saisie incorrecte');
-	end;
 	until retour_menu;
 end;
 
@@ -200,7 +198,7 @@ for i:=1 to length(cv.valeur_i) do
 	if (pos(cv.valeur_i[i],valide)=0) or (cv.unite_f='') or (cv.unite_i='') then
 		autorise:=False;
 	end;
-if (not(trouve_i) and not(trouve_f)) or not(autorise) then
+if (not(trouve_i) or not(trouve_f)) or not(autorise) then
 	writeln('Erreur, verifiez les unites et formats de votre saisie')
 else
 	begin
@@ -255,7 +253,7 @@ var nm, choix: string;
 	t: tableau;
 	trouve: Boolean;
 begin
-trouve:=True;
+trouve:=False;
 write('Vous souhaitez: "ct" constantes / "dm" dimension: ');
 readln(choix);
 ClrScr;
@@ -265,6 +263,7 @@ if choix='ct' then
 	chargementdonnees(t,nm,'constantes');
 	write('Constante dont vous souhaitez consulter la valeur: ');
 	readln(ct.constante);
+	ClrScr();
 	while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
 		begin
 		if (t[i][0]=ct.constante) or (t[i][1]=ct.constante) then
@@ -272,37 +271,40 @@ if choix='ct' then
 			ct.valeur:=t[i][2];
 			ct.unite:=t[i][3];
 			ct.dimension:=t[i][4];
-			end
-		else
-			trouve:=False;
+			ct.constante:=t[i][0];
+			consulter:=ct.constante + ' = ' + ct.valeur + ' ' + ct.unite + ' ; dimension = ' + ct.dimension ;
+			trouve:=True;
+			end;
 		i+=1;
 		end;
-	consulter:=ct.constante + ' = ' + ct.valeur + ' ' + ct.unite + ' ; dimension = ' + ct.dimension ;
 	end;
 if choix='dm' then
 	begin
 	chargementdonnees(t,nm,'dimensions');
 	write('Grandeur dont vous souhaitez consulter la dimension: ');
 	readln(dm.grandeur);
-	while (i<=(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
+	ClrScr();
+	while (i<(StrToInt(nm)-(StrToInt(nm) mod 10)) div 10) and not(trouve) do
 		begin
 		if t[i][0]=dm.grandeur then
 			begin
 			dm.dim_SI:=t[i][1];
+			consulter:= dm.grandeur + ' homogene a ' + dm.dim_SI ;
 			trouve:=True;
-			end
-		else
-			trouve:=False;
+			end;
 		i+=1;
 		end;
-	consulter:=dm.grandeur + 'homogène à ' + ct.dimension ;
+	end;
+if trouve=False then
+	begin
+	ClrScr();
+	writeln('Saisie incorrecte, veuillez recommencer');
 	end
 else
-	trouve:=False;
-if trouve=False then
-	writeln('Saisie incorrecte, veuillez recommencer');
-ClrScr();
-writeln(consulter);
+	begin
+	ClrScr();
+	writeln(consulter);
+	end;
 end;
 
 // Ajout d'informations dans les fichiers de base de données
