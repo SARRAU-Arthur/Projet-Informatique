@@ -103,7 +103,7 @@ end;
 	    if (s[i] = '(') then
 		 begin
 			closePos := Parantehese(s, i + 1); // trouver la Parantehese
-			s1 := Copy(s, i + 1, closePos - i - 1); // prendre entre les paratehes
+			s1 := Copy(s, i + 1, closePos - i - 1);  // prendre entre les paratehes 
 			s := Copy(s, 1, i - 1) + FloatToStr(calcul(s1)) + Copy(s, closePos + 1,  Length(s)-(i-1)); // calcul 
 			i := Length(s); // calcul la length 
 		 end
@@ -123,16 +123,12 @@ end;
 			    else
 				 calcul := sin(DegToRad(calcul(s2)));
 				 exit;			 
-			 end;			
-			  
+			 end;				   
 			    if (s[i] = '-') and ((s[i-1] = '^')  )then 
 			  begin
 				s1 := Copy(s, 1, i - 1);
 				s2 := Copy(s, i , Length(s)-(i-1));
 				s2 := FloatToStr(StrToFloat(s2));
-				calcul := power(calcul(s1),calcul(s2));
-				exit;
-				
 			  end;
 				   if (s[i] = '-') and ((s[i-1] = 'e')  )then 
 			  begin
@@ -260,12 +256,12 @@ end;
 	   while i > 0 do
 	   begin
 		if (s[i] = 'l') then
-		begin
+		   begin
 			s1 := Copy(s, 1, i - 1);
 			s2 := Copy(s, i + 1, Length(s)-(i-1));
 			calcul := Logn(calcul(s1),calcul(s2));
 			exit;
-			end
+		   end
          else
 		 i:=i-1;
         end;	
@@ -275,9 +271,9 @@ end;
 	   begin
 		if (s[i] = 'r') then
 		begin
-          s1 := Copy(s, 0, i - 1);
+         s1 := Copy(s, 0, i - 1);
          s2 := Copy(s, i + 1, Length(s)-(i-1));
-		calcul :=  Sqrt(calcul(s2));
+		 calcul :=  Sqrt(calcul(s2));
 			exit;
 			end
          else
@@ -303,8 +299,7 @@ end;
 			 begin
 				s1 := Copy(s, 0, i - 1);
 				s2 := Copy(s, i + 1, Length(s)-(i-1));
-				calcul := power(calcul(s1),calcul(s2));
-		
+				calcul := power(calcul(s1),calcul(s2));	
 				exit;
 			 end
 			 
